@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("user")
+
+  resumes   Resume[]
+  roadmaps  Roadmap[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model Resume {
+  id            String   @id @default(cuid())
+  fileUrl       String
+  extractedText String?
+
+  userId        String
+  user          User @relation(fields: [userId], references: [id])
+
+  analysis      ResumeAnalysis?
+
+  createdAt     DateTime @default(now())
+}
+model ResumeAnalysis {
+  id          String  @id @default(cuid())
+
+  score       Int
+
+  strengths   String[]
+  weaknesses  String[]
+
+  resumeId    String @unique
+  resume      Resume @relation(fields: [resumeId], references: [id])
+
+  createdAt   DateTime @default(now())
+}
+model SkillGap {
+  id            String   @id @default(cuid())
+
+  targetRole    String
+
+  currentSkills String[]
+  missingSkills String[]
+
+  userId        String
+  user          User @relation(fields: [userId], references: [id])
+
+  createdAt     DateTime @default(now())
+}
+model Roadmap {
+  id        String @id @default(cuid())
+
+  title     String
+
+  steps     Json
+
+  userId    String
+  user      User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+model JobMatch {
+  id          String @id @default(cuid())
+
+  jobTitle    String
+  company     String
+  matchScore  Int
+
+  userId      String
+  user        User @relation(fields: [userId], references: [id])
+
+  createdAt   DateTime @default(now())
+}
+model MockInterview {
+  id           String @id @default(cuid())
+
+  questions    Json
+  answers      Json
+
+  score        Int?
+
+  userId        String
+  user          User @relation(fields: [userId], references: [id])
+
+  createdAt    DateTime @default(now())
+}
