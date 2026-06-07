@@ -12,91 +12,101 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String
-  role      String   @default("user")
 
-  resumes   Resume[]
-  roadmaps  Roadmap[]
+model User {
+  id       String @id @default(cuid())
+  name     String
+  email    String @unique
+  password String
+  role     String @default("user")
+
+  resumes        Resume[]
+  roadmaps       Roadmap[]
+  skillGaps      SkillGap[]
+  jobMatches     JobMatch[]
+  mockInterviews MockInterview[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
 model Resume {
-  id            String   @id @default(cuid())
+  id            String  @id @default(cuid())
   fileUrl       String
   extractedText String?
 
-  userId        String
-  user          User @relation(fields: [userId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
-  analysis      ResumeAnalysis?
+  analysis ResumeAnalysis?
 
-  createdAt     DateTime @default(now())
+  createdAt DateTime @default(now())
 }
+
 model ResumeAnalysis {
-  id          String  @id @default(cuid())
+  id String @id @default(cuid())
 
-  score       Int
+  score Int
 
-  strengths   String[]
-  weaknesses  String[]
+  strengths  String[]
+  weaknesses String[]
 
-  resumeId    String @unique
-  resume      Resume @relation(fields: [resumeId], references: [id])
+  resumeId String @unique
+  resume   Resume @relation(fields: [resumeId], references: [id])
 
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
 }
-model SkillGap {
-  id            String   @id @default(cuid())
 
-  targetRole    String
+model SkillGap {
+  id String @id @default(cuid())
+
+  targetRole String
 
   currentSkills String[]
   missingSkills String[]
 
-  userId        String
-  user          User @relation(fields: [userId], references: [id])
-
-  createdAt     DateTime @default(now())
-}
-model Roadmap {
-  id        String @id @default(cuid())
-
-  title     String
-
-  steps     Json
-
-  userId    String
-  user      User @relation(fields: [userId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
   createdAt DateTime @default(now())
 }
-model JobMatch {
-  id          String @id @default(cuid())
 
-  jobTitle    String
-  company     String
-  matchScore  Int
+model Roadmap {
+  id String @id @default(cuid())
 
-  userId      String
-  user        User @relation(fields: [userId], references: [id])
+  title String
 
-  createdAt   DateTime @default(now())
+  steps Json
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
 }
+
+model JobMatch {
+  id String @id @default(cuid())
+
+  jobTitle   String
+  company    String
+  matchScore Int
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
 model MockInterview {
-  id           String @id @default(cuid())
+  id String @id @default(cuid())
 
-  questions    Json
-  answers      Json
+  questions Json
+  answers   Json
 
-  score        Int?
+  score Int?
 
-  userId        String
-  user          User @relation(fields: [userId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
-  createdAt    DateTime @default(now())
+  createdAt DateTime @default(now())
 }
