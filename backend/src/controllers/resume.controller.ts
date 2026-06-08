@@ -1,18 +1,13 @@
 import { Request, Response, NextFunction } from "express";
-import { upload } from "../middleware/upload.middleware";
 import cloudinary from "../config/cloudinary";
 import { prisma } from "../config/prisma";
 
 // POST /api/resume/upload
-export const uploadResume = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
+export const upload = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    // @ts-ignore - user added by auth middleware
-    const userId = (req as any).user?.userId;
-    if (!userId) {
+    // user set by auth middleware, payload contains userId
+    const user = (req as any).user;
+    if (!user?.userId) {
       res.status(401).json({ success: false, message: "Unauthorized" });
       return;
     }
@@ -26,13 +21,10 @@ export const uploadResume = async (
 
     // Upload to Cloudinary using upload_stream (supports buffer)
     const uploadResult = await new Promise<any>((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        { resource_type: "auto" },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      );
+      const stream = cloudinary.uploader.upload_stream({ resource_type: "auto" }, (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
       stream.end(file.buffer);
     });
 
@@ -40,7 +32,7 @@ export const uploadResume = async (
     const resume = await prisma.resume.create({
       data: {
         fileUrl: uploadResult.secure_url,
-        user: { connect: { id: userId } },
+        user: { connect: { id: user.userId } },
       },
     });
 
@@ -51,18 +43,14 @@ export const uploadResume = async (
 };
 
 // GET /api/resume/me - fetch current user's resume (first one)
-export const getMyResume = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
+export const getMyResume = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const userId = (req as any).user?.userId;
-    if (!userId) {
+    const user = (req as any).user;
+    if (!user?.userId) {
       res.status(401).json({ success: false, message: "Unauthorized" });
       return;
     }
-    const resume = await prisma.resume.findFirst({ where: { userId } });
+    const resume = await prisma.resume.findFirst({ where: { userId: user.userId } });
     if (!resume) {
       res.status(404).json({ success: false, message: "Resume not found" });
       return;
