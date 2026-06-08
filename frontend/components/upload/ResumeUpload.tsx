@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Upload, Lock, FileText, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/src/context/AuthContext";
 
 export default function ResumeUpload() {
+  const { currentUser } = useAuth();
   const router = useRouter();
   const [isDragActive, setIsDragActive] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -62,11 +64,19 @@ export default function ResumeUpload() {
       alert("Please choose a file or drag it in first.");
       return;
     }
+
+    if (!currentUser) {
+      // User is not logged in: Redirect to login page
+      router.push("/login");
+      return;
+    }
+
     setIsUploading(true);
     setTimeout(() => {
       router.push("/dashboard");
     }, 1200);
   };
+
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-12">

@@ -18,6 +18,7 @@ import {
   Menu,
   X,
   Sparkles,
+  LogOut,
 } from "lucide-react";
 
 // Import tabs
@@ -35,6 +36,9 @@ import Settings from "@/components/dashboard/Settings";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
+import { useAuth } from "@/src/context/AuthContext";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
+
 type TabId =
   | "overview"
   | "resume-analysis"
@@ -48,6 +52,7 @@ type TabId =
   | "settings";
 
 export default function Dashboard() {
+  const { currentUser, logout } = useAuth();
   const [activeTab, setActiveTab] = useState<TabId>("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -93,190 +98,228 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 flex">
-      {/* -----------------------------------------
-           Sidebar Navigation
-           ----------------------------------------- */}
-      
-      {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col w-64 border-r border-slate-100 bg-white sticky top-0 h-screen shrink-0">
-        {/* Logo */}
-        <div className="px-6 py-5 border-b border-slate-50 flex items-center gap-2">
-          <div className="bg-[#F4B400] w-8 h-8 rounded-lg flex items-center justify-center shadow-sm">
-            <Compass className="w-4.5 h-4.5 text-white stroke-[2.5]" />
-          </div>
-          <span className="text-lg font-bold font-serif text-slate-900 tracking-tight">
-            Career<span className="text-[#F4B400]">Navigator</span>
-          </span>
-        </div>
-
-        {/* Navigation links */}
-        <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
-          {menuItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center gap-3.5 px-4.5 py-3 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
-                activeTab === item.id
-                  ? "bg-amber-50 text-slate-900 shadow-sm border-l-4 border-[#F4B400] pl-3.5"
-                  : "text-slate-500 hover:text-slate-800 hover:bg-slate-50/50"
-              }`}
-            >
-              {item.icon}
-              <span>{item.label}</span>
-            </button>
-          ))}
-        </nav>
-
-        {/* Footer profile summary */}
-        <div className="p-4 border-t border-slate-50 flex items-center gap-3.5 shrink-0 bg-white">
-          <Avatar className="w-9 h-9 border border-slate-150">
-            <AvatarFallback className="bg-amber-100 text-slate-700 font-extrabold text-xs">
-              AJ
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col truncate">
-            <span className="text-xs font-bold text-slate-800">Alex Johnson</span>
-            <span className="text-[10px] text-slate-400 font-medium">SDE Candidate</span>
-          </div>
-        </div>
-      </aside>
-
-      {/* Mobile Sidebar overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-50 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      {/* Mobile Drawer Sidebar */}
-      <aside
-        className={`fixed top-0 bottom-0 left-0 w-64 bg-white border-r border-slate-100 z-50 flex flex-col transform transition-transform duration-300 lg:hidden ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <div className="px-6 py-5 border-b border-slate-50 flex justify-between items-center shrink-0">
-          <div className="flex items-center gap-2">
-            <div className="bg-[#F4B400] w-8 h-8 rounded-lg flex items-center justify-center">
-              <Compass className="w-4.5 h-4.5 text-white" />
+    <ProtectedRoute>
+      <div className="min-h-screen bg-slate-50/50 flex">
+        {/* -----------------------------------------
+             Sidebar Navigation
+             ----------------------------------------- */}
+        
+        {/* Desktop Sidebar */}
+        <aside className="hidden lg:flex flex-col w-64 border-r border-slate-100 bg-white sticky top-0 h-screen shrink-0">
+          {/* Logo */}
+          <div className="px-6 py-5 border-b border-slate-50 flex items-center gap-2">
+            <div className="bg-[#F4B400] w-8 h-8 rounded-lg flex items-center justify-center shadow-sm">
+              <Compass className="w-4.5 h-4.5 text-white stroke-[2.5]" />
             </div>
-            <span className="text-base font-bold font-serif text-slate-900">
+            <span className="text-lg font-bold font-serif text-slate-900 tracking-tight">
               Career<span className="text-[#F4B400]">Navigator</span>
             </span>
           </div>
-          <button
-            onClick={() => setSidebarOpen(false)}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-50 cursor-pointer"
-          >
-            <X className="w-4.5 h-4.5" />
-          </button>
-        </div>
 
-        <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
-          {menuItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => {
-                setActiveTab(item.id);
-                setSidebarOpen(false);
-              }}
-              className={`w-full flex items-center gap-3.5 px-4.5 py-3 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
-                activeTab === item.id
-                  ? "bg-amber-50 text-slate-900 border-l-4 border-[#F4B400] pl-3.5"
-                  : "text-slate-500 hover:text-slate-800 hover:bg-slate-50/50"
-              }`}
-            >
-              {item.icon}
-              <span>{item.label}</span>
-            </button>
-          ))}
-        </nav>
-      </aside>
+          {/* Navigation links */}
+          <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+            {menuItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                className={`w-full flex items-center gap-3.5 px-4.5 py-3 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
+                  activeTab === item.id
+                    ? "bg-amber-50 text-slate-900 shadow-sm border-l-4 border-[#F4B400] pl-3.5"
+                    : "text-slate-500 hover:text-slate-800 hover:bg-slate-50/50"
+                }`}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </button>
+            ))}
+          </nav>
 
-      {/* -----------------------------------------
-           Main Content Area
-           ----------------------------------------- */}
-      <main className="flex-1 flex flex-col min-w-0">
-        
-        {/* Top Navbar */}
-        <header className="h-16 border-b border-slate-100 bg-white flex items-center justify-between px-6 sticky top-0 z-30 shrink-0">
-          <div className="flex items-center gap-3">
-            {/* Sidebar mobile toggle */}
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="lg:hidden w-9 h-9 rounded-lg flex items-center justify-center text-slate-500 hover:bg-slate-50 cursor-pointer"
-            >
-              <Menu className="w-5 h-5" />
-            </button>
-
-            {/* Search Input */}
-            <div className="relative hidden sm:block w-64 md:w-80">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Search resources, topics, matching jobs..."
-                className="w-full bg-slate-50/60 border border-slate-100 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#F4B400] transition-all"
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4 relative">
-            {/* Notifications trigger */}
-            <button
-              onClick={() => setNotificationsOpen(!notificationsOpen)}
-              className="w-9.5 h-9.5 rounded-xl border border-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-50 relative cursor-pointer"
-            >
-              <Bell className="w-4.5 h-4.5" />
-              {/* Notification dot indicator */}
-              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-500" />
-            </button>
-
-            {/* Notifications Dropdown Panel */}
-            {notificationsOpen && (
-              <>
-                <div
-                  className="fixed inset-0 z-40"
-                  onClick={() => setNotificationsOpen(false)}
-                />
-                <div className="absolute right-0 top-11 bg-white border border-slate-100 rounded-2xl w-80 shadow-[0_12px_24px_rgba(0,0,0,0.08)] py-3 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                  <h4 className="text-xs font-bold text-slate-900 px-4 pb-2 border-b border-slate-50 font-serif">
-                    Recent Notifications
-                  </h4>
-                  <div className="max-h-64 overflow-y-auto py-1">
-                    {[
-                      { text: "Your resume score improved by 4%!", time: "2 hours ago" },
-                      { text: "New matching SDE job posted at Apex Ledger Corp", time: "1 day ago" },
-                      { text: "Recommended Week 2 containerization module is open", time: "3 days ago" },
-                    ].map((notif, idx) => (
-                      <div
-                        key={idx}
-                        className="px-4 py-3 hover:bg-slate-50 text-xs border-b border-slate-50 last:border-none"
-                      >
-                        <p className="text-slate-700 leading-normal">{notif.text}</p>
-                        <span className="text-[10px] text-slate-400 mt-1 block">{notif.time}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-
-            {/* Avatar Profile */}
-            <Avatar className="w-9 h-9 border border-slate-100">
+          {/* Footer profile summary */}
+          <div className="p-4 border-t border-slate-50 flex items-center gap-3.5 shrink-0 bg-white">
+            <Avatar className="w-9 h-9 border border-slate-150">
               <AvatarFallback className="bg-amber-100 text-slate-700 font-extrabold text-xs">
-                AJ
+                {currentUser?.name
+                  ? currentUser.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      .substring(0, 2)
+                      .toUpperCase()
+                  : "U"}
               </AvatarFallback>
             </Avatar>
+            <div className="flex flex-col truncate">
+              <span className="text-xs font-bold text-slate-800 truncate">
+                {currentUser?.name}
+              </span>
+              <span className="text-[10px] text-slate-400 font-medium capitalize">
+                {currentUser?.role || "user"}
+              </span>
+            </div>
           </div>
-        </header>
+        </aside>
 
-        {/* Inner page content container */}
-        <div className="flex-1 p-6 md:p-8 overflow-y-auto max-w-7xl w-full mx-auto">
-          {renderActiveContent()}
-        </div>
+        {/* Mobile Sidebar overlay */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-50 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
 
-      </main>
-    </div>
+        {/* Mobile Drawer Sidebar */}
+        <aside
+          className={`fixed top-0 bottom-0 left-0 w-64 bg-white border-r border-slate-100 z-50 flex flex-col transform transition-transform duration-300 lg:hidden ${
+            sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          <div className="px-6 py-5 border-b border-slate-50 flex justify-between items-center shrink-0">
+            <div className="flex items-center gap-2">
+              <div className="bg-[#F4B400] w-8 h-8 rounded-lg flex items-center justify-center">
+                <Compass className="w-4.5 h-4.5 text-white" />
+              </div>
+              <span className="text-base font-bold font-serif text-slate-900">
+                Career<span className="text-[#F4B400]">Navigator</span>
+              </span>
+            </div>
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-50 cursor-pointer"
+            >
+              <X className="w-4.5 h-4.5" />
+            </button>
+          </div>
+
+          <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+            {menuItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => {
+                  setActiveTab(item.id);
+                  setSidebarOpen(false);
+                }}
+                className={`w-full flex items-center gap-3.5 px-4.5 py-3 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
+                  activeTab === item.id
+                    ? "bg-amber-50 text-slate-900 border-l-4 border-[#F4B400] pl-3.5"
+                    : "text-slate-500 hover:text-slate-800 hover:bg-slate-50/50"
+                }`}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </button>
+            ))}
+          </nav>
+        </aside>
+
+        {/* -----------------------------------------
+             Main Content Area
+             ----------------------------------------- */}
+        <main className="flex-1 flex flex-col min-w-0">
+          
+          {/* Top Navbar */}
+          <header className="h-16 border-b border-slate-100 bg-white flex items-center justify-between px-6 sticky top-0 z-30 shrink-0">
+            <div className="flex items-center gap-3">
+              {/* Sidebar mobile toggle */}
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="lg:hidden w-9 h-9 rounded-lg flex items-center justify-center text-slate-500 hover:bg-slate-50 cursor-pointer"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+
+              {/* Search Input */}
+              <div className="relative hidden sm:block w-64 md:w-80">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Search resources, topics, matching jobs..."
+                  className="w-full bg-slate-50/60 border border-slate-100 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#F4B400] transition-all"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 relative">
+              {/* Notifications trigger */}
+              <button
+                onClick={() => setNotificationsOpen(!notificationsOpen)}
+                className="w-9.5 h-9.5 rounded-xl border border-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-50 relative cursor-pointer"
+              >
+                <Bell className="w-4.5 h-4.5" />
+                {/* Notification dot indicator */}
+                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-500" />
+              </button>
+
+              {/* Notifications Dropdown Panel */}
+              {notificationsOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setNotificationsOpen(false)}
+                  />
+                  <div className="absolute right-0 top-11 bg-white border border-slate-100 rounded-2xl w-80 shadow-[0_12px_24px_rgba(0,0,0,0.08)] py-3 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <h4 className="text-xs font-bold text-slate-900 px-4 pb-2 border-b border-slate-50 font-serif">
+                      Recent Notifications
+                    </h4>
+                    <div className="max-h-64 overflow-y-auto py-1">
+                      {[
+                        { text: "Your resume score improved by 4%!", time: "2 hours ago" },
+                        { text: "New matching SDE job posted at Apex Ledger Corp", time: "1 day ago" },
+                        { text: "Recommended Week 2 containerization module is open", time: "3 days ago" },
+                      ].map((notif, idx) => (
+                        <div
+                          key={idx}
+                          className="px-4 py-3 hover:bg-slate-50 text-xs border-b border-slate-50 last:border-none"
+                        >
+                          <p className="text-slate-700 leading-normal">{notif.text}</p>
+                          <span className="text-[10px] text-slate-400 mt-1 block">{notif.time}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* User Profile Info & Logout */}
+              <div className="flex items-center gap-3">
+                <div className="hidden sm:flex flex-col text-right">
+                  <span className="text-xs font-bold text-slate-800">{currentUser?.name}</span>
+                  <span className="text-[9px] text-slate-400 font-medium capitalize">
+                    {currentUser?.role || "user"}
+                  </span>
+                </div>
+                <Avatar className="w-9 h-9 border border-slate-100">
+                  <AvatarFallback className="bg-amber-100 text-slate-700 font-extrabold text-xs">
+                    {currentUser?.name
+                      ? currentUser.name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                          .substring(0, 2)
+                          .toUpperCase()
+                      : "U"}
+                  </AvatarFallback>
+                </Avatar>
+                <Button
+                  onClick={logout}
+                  variant="ghost"
+                  className="text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl h-9.5 w-9.5 p-0 flex items-center justify-center cursor-pointer"
+                  title="Log Out"
+                >
+                  <LogOut className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </header>
+
+          {/* Inner page content container */}
+          <div className="flex-1 p-6 md:p-8 overflow-y-auto max-w-7xl w-full mx-auto">
+            {renderActiveContent()}
+          </div>
+
+        </main>
+      </div>
+    </ProtectedRoute>
   );
 }
+
+

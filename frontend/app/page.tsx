@@ -2,6 +2,9 @@
 
 import React from "react";
 import { motion } from "framer-motion";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/src/context/AuthContext";
 import {
   Phone,
   Compass,
@@ -15,13 +18,18 @@ import {
   CheckCircle2,
   ChevronRight,
   Sparkles,
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import ResumeUpload from "@/components/upload/ResumeUpload";
 
 export default function Home() {
+  const { currentUser, logout, loading } = useAuth();
+  const router = useRouter();
+
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans relative overflow-x-hidden">
       
@@ -79,17 +87,65 @@ export default function Home() {
 
           {/* Action Buttons */}
           <div className="flex items-center gap-3.5">
-            <Button
-              variant="ghost"
-              className="text-sm font-semibold text-slate-700 hover:text-slate-900"
-            >
-              Log In
-            </Button>
-            <Button
-              className="bg-[#F4B400] hover:bg-[#E2A600] text-slate-900 font-bold text-sm px-5 py-2.5 rounded-xl shadow-[0_4px_14px_rgba(244,180,0,0.25)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
-            >
-              Sign Up
-            </Button>
+            {loading ? (
+              <div className="h-9 w-24 bg-slate-100 animate-pulse rounded-xl" />
+            ) : currentUser ? (
+              <div className="flex items-center gap-4">
+                {/* Dashboard Button */}
+                <Link href="/dashboard">
+                  <Button className="bg-[#F4B400] hover:bg-[#E2A600] text-slate-900 font-bold text-xs px-4 py-2 h-9 rounded-xl shadow-sm hover:scale-[1.01] active:scale-[0.99] transition-all">
+                    Dashboard
+                  </Button>
+                </Link>
+
+                {/* Profile Avatar & Name */}
+                <div className="hidden sm:flex items-center gap-2">
+                  <Avatar className="w-8 h-8 border border-slate-150">
+                    <AvatarFallback className="bg-amber-100 text-slate-700 font-extrabold text-[10px]">
+                      {currentUser.name
+                        ? currentUser.name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")
+                            .substring(0, 2)
+                            .toUpperCase()
+                        : "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-xs font-bold text-slate-800 truncate max-w-[100px]">
+                    {currentUser.name}
+                  </span>
+                </div>
+
+                {/* Logout Button */}
+                <Button
+                  onClick={logout}
+                  variant="ghost"
+                  className="text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl h-9 w-9 p-0 flex items-center justify-center cursor-pointer"
+                  title="Log Out"
+                >
+                  <LogOut className="w-4.5 h-4.5" />
+                </Button>
+              </div>
+            ) : (
+              <>
+                <Link href="/login">
+                  <Button
+                    variant="ghost"
+                    className="text-sm font-semibold text-slate-700 hover:text-slate-900 cursor-pointer"
+                  >
+                    Log In
+                  </Button>
+                </Link>
+                <Link href="/register">
+                  <Button
+                    className="bg-[#F4B400] hover:bg-[#E2A600] text-slate-900 font-bold text-sm px-5 py-2.5 h-9 rounded-xl shadow-[0_4px_14px_rgba(244,180,0,0.25)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer"
+                  >
+                    Sign Up
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>
