@@ -1,6 +1,7 @@
 import cors from "cors";
 import express, { Request, Response, NextFunction } from "express";
 import authRouter from "./routes/auth.routes";
+import resumeRouter from "./routes/resume.routes";
 
 const app = express();
 
@@ -9,6 +10,7 @@ app.use(express.json());
 
 // Routes
 app.use("/api/auth", authRouter);
+app.use("/api/resume", resumeRouter);
 
 app.get("/", (_req, res) => {
   res.json({
@@ -56,4 +58,3 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
 });
 
 export default app;
-
