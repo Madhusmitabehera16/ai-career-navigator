@@ -4,8 +4,14 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, FileText, AlertCircle, Sparkles } from "lucide-react";
+import { useResumeAnalysis } from "@/src/hooks/useResumeAnalysis";
 
 export default function ResumeAnalysis() {
+  const { data, isLoading } = useResumeAnalysis();
+  const skills = data?.skills ?? ["React", "Next.js", "Node.js"];
+  const summary = data?.summary ?? "Professional developer with relevant experience.";
+  const suggestions = data?.suggestions ?? [];
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
       
@@ -35,7 +41,7 @@ export default function ResumeAnalysis() {
                 Profile Overview
               </span>
               <p className="text-sm text-slate-600 mt-2 leading-relaxed">
-                Full-stack developer with 2+ years of experience constructing web applications. Experienced with modern frontend tooling, cloud deployments, and backend databases. Seeking Software Development Engineer (SDE) roles.
+                {summary}
               </p>
             </div>
 
@@ -45,7 +51,7 @@ export default function ResumeAnalysis() {
                 Skills Detected
               </span>
               <div className="flex flex-wrap gap-2.5 mt-3">
-                {["React", "Next.js", "Node.js", "MongoDB", "AWS"].map((skill) => (
+                {skills.map((skill: string) => (
                   <Badge
                     key={skill}
                     className="bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700 font-bold border py-1.5 px-3.5 rounded-xl text-xs"
@@ -117,12 +123,19 @@ export default function ResumeAnalysis() {
             </h3>
             
             <div className="flex flex-col gap-5">
-              {[
-                { title: "ATS Layout Compatibility", status: "pass", desc: "No tables/graphics blocking indexers." },
-                { title: "Contact Information Check", status: "pass", desc: "Found phone, email, and location details." },
-                { title: "Action Verb Frequency", status: "fail", desc: "Requires stronger leading statements." },
-                { title: "Section Headers Structure", status: "pass", desc: "Uses standard parseable names." },
-              ].map((item, idx) => (
+              {(suggestions.length > 0 
+                ? suggestions.slice(0, 4).map((sugg: string, i: number) => ({
+                    title: sugg,
+                    status: i % 2 === 0 ? "pass" : "fail",
+                    desc: i % 2 === 0 ? "Looks good" : "Needs improvement"
+                  }))
+                : [
+                    { title: "ATS Layout Compatibility", status: "pass", desc: "No tables/graphics blocking indexers." },
+                    { title: "Contact Information Check", status: "pass", desc: "Found phone, email, and location details." },
+                    { title: "Action Verb Frequency", status: "fail", desc: "Requires stronger leading statements." },
+                    { title: "Section Headers Structure", status: "pass", desc: "Uses standard parseable names." },
+                  ]
+              ).map((item, idx) => (
                 <div key={idx} className="flex gap-3 items-start">
                   {item.status === "pass" ? (
                     <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />

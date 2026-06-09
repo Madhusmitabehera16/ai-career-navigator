@@ -1,7 +1,8 @@
 import cors from "cors";
 import express, { Request, Response, NextFunction } from "express";
 import authRouter from "./routes/auth.routes";
-import resumeRouter from "./routes/resume.routes";
+// import resumeRouter from "./routes/resume.routes";
+// import aiRouter from "./routes/ai.routes";
 
 const app = express();
 
@@ -10,7 +11,9 @@ app.use(express.json());
 
 // Routes
 app.use("/api/auth", authRouter);
-app.use("/api/resume", resumeRouter);
+// // app.use("/api/resume", resumeRouter);
+// app.use("/api", aiRouter);
+// app.use("/api", aiRouter);
 
 app.get("/", (_req, res) => {
   res.json({

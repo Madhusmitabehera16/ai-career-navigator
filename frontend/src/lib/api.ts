@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
@@ -26,17 +26,41 @@ api.interceptors.request.use(
 );
 
 // Response interceptor to handle errors globally
+const normalizeErrorMessage = (value: unknown) => {
+  if (typeof value === "string") return value;
+  if (value instanceof Error) return value.message || "An unexpected error occurred.";
+
+  try {
+    const json = JSON.stringify(value, Object.getOwnPropertyNames(value));
+    if (json) return json;
+  } catch {
+    // Fall through to string conversion below
+  }
+
+  try {
+    return String(value);
+  } catch {
+    return "An unexpected error occurred.";
+  }
+};
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // We can handle specific errors here (e.g., token expiration redirects)
-    const message = error.response?.data?.message || "An unexpected error occurred.";
-    
-    // Customize error payload to make it easier to display in components
+    if (!axios.isAxiosError(error)) {
+      return Promise.reject(error);
+    }
+
+    const axiosError = error as AxiosError;
+    const responseData = axiosError.response?.data;
+    const rawMessage = responseData?.message ?? axiosError.message ?? "An unexpected error occurred.";
+    const message = normalizeErrorMessage(rawMessage);
+
     const customError = new Error(message);
-    (customError as any).status = error.response?.status;
-    (customError as any).errors = error.response?.data?.errors;
-    
+    (customError as any).status = axiosError.response?.status;
+    (customError as any).errors = responseData?.errors;
+    (customError as any).code = axiosError.code;
+
     return Promise.reject(customError);
   }
 );

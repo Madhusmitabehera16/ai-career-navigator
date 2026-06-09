@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Compass,
   LayoutDashboard,
@@ -20,6 +20,7 @@ import {
   Sparkles,
   LogOut,
 } from "lucide-react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Import tabs
 import Overview from "@/components/dashboard/Overview";
@@ -56,6 +57,7 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<TabId>("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const queryClient = useMemo(() => new QueryClient(), []);
 
   const menuItems = [
     { id: "overview", label: "Dashboard", icon: <LayoutDashboard className="w-4 h-4" /> },
@@ -99,7 +101,8 @@ export default function Dashboard() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-slate-50/50 flex">
+      <QueryClientProvider client={queryClient}>
+        <div className="min-h-screen bg-slate-50/50 flex">
         {/* -----------------------------------------
              Sidebar Navigation
              ----------------------------------------- */}
@@ -317,7 +320,8 @@ export default function Dashboard() {
           </div>
 
         </main>
-      </div>
+        </div>
+      </QueryClientProvider>
     </ProtectedRoute>
   );
 }

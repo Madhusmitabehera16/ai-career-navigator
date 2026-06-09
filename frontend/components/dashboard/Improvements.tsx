@@ -4,28 +4,11 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, ArrowUpRight, CheckCircle2, ChevronRight, FileText } from "lucide-react";
+import { useImprovements } from "@/src/hooks/useImprovements";
 
 export default function Improvements() {
-  const suggestions = [
-    {
-      before: "Built Hotel Booking Website",
-      after: "Developed a full-stack hotel booking platform using Next.js, Node.js, MongoDB and Razorpay with secure authentication and payment processing.",
-      impact: "+14% ATS compatibility",
-      metric: "Actionable details & tech stack indicators",
-    },
-    {
-      before: "Helped write AI Navigator tools",
-      after: "Architected core ingestion pipelines for the AI Career Navigator using Python and FastAPI, increasing parsing throughput by 35%.",
-      impact: "+18% ATS readability",
-      metric: "Quantitative metrics & leadership phrasing",
-    },
-    {
-      before: "Did programming in computer science B.Tech",
-      after: "Completed B.Tech in Computer Science with focus on Relational Databases, System Engineering frameworks, and software lifecycles.",
-      impact: "+8% ATS matching",
-      metric: "Academic course alignment & keyword placement",
-    },
-  ];
+  const { data, isLoading } = useImprovements();
+  const suggestions = data?.suggestions ?? [];
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">

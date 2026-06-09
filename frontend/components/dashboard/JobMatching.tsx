@@ -4,43 +4,11 @@ import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Briefcase, MapPin, DollarSign, ArrowUpRight, CheckCircle2 } from "lucide-react";
+import { useJobMatches } from "@/src/hooks/useJobMatches";
 
 export default function JobMatching() {
-  const jobs = [
-    {
-      title: "Frontend Developer",
-      company: "CloudVibe Systems",
-      loc: "San Francisco, CA (Hybrid)",
-      sal: "$110k - $130k",
-      match: 92,
-      tags: ["React", "TypeScript", "Tailwind CSS"],
-    },
-    {
-      title: "SDE Intern",
-      company: "DataNexus Tech",
-      loc: "Remote (US)",
-      sal: "$45 - $60 / hour",
-      match: 88,
-      tags: ["Node.js", "MongoDB", "Data Structures"],
-    },
-    {
-      title: "Full Stack Engineer",
-      company: "Apex Ledger Corp",
-      loc: "New York, NY (Hybrid)",
-      sal: "$130k - $150k",
-      match: 84,
-      tags: ["Next.js", "Node.js", "PostgreSQL"],
-    },
-    {
-      title: "DevOps Intern",
-      company: "SafeScale Networks",
-      loc: "Seattle, WA (On-site)",
-      sal: "$40 - $55 / hour",
-      match: 72,
-      tags: ["Docker", "AWS", "CI/CD Platforms"],
-    },
-  ];
-
+  const { data, isLoading } = useJobMatches();
+  const jobs = data?.jobs ?? [];
   const [appliedJobs, setAppliedJobs] = useState<Record<number, boolean>>({});
 
   const handleApply = (idx: number) => {
@@ -71,9 +39,9 @@ export default function JobMatching() {
             {/* Top border bar matching the score color */}
             <div
               className={`absolute top-0 left-0 w-full h-1.5 ${
-                job.match >= 90
+                job.matchScore >= 90
                   ? "bg-emerald-500"
-                  : job.match >= 80
+                  : job.matchScore >= 80
                   ? "bg-[#F4B400]"
                   : "bg-slate-300"
               }`}
@@ -85,7 +53,7 @@ export default function JobMatching() {
               <div className="flex justify-between items-start mb-4 mt-1.5">
                 <div>
                   <h3 className="text-base font-bold text-slate-900 font-serif">
-                    {job.title}
+                    {job.jobTitle}
                   </h3>
                   <span className="text-xs font-bold text-slate-500">
                     {job.company}
@@ -95,14 +63,14 @@ export default function JobMatching() {
                 <div className="flex flex-col items-end">
                   <span
                     className={`text-xl font-extrabold leading-none ${
-                      job.match >= 90
+                      job.matchScore >= 90
                         ? "text-emerald-600"
-                        : job.match >= 80
+                        : job.matchScore >= 80
                         ? "text-[#F4B400]"
                         : "text-slate-500"
                     }`}
                   >
-                    {job.match}%
+                    {job.matchScore}%
                   </span>
                   <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-1">
                     Match
@@ -114,11 +82,11 @@ export default function JobMatching() {
               <div className="space-y-2 mb-6">
                 <div className="flex items-center gap-2 text-xs text-slate-500">
                   <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                  <span>{job.loc}</span>
+                  <span>{job.location || "Remote"}</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-slate-500">
                   <DollarSign className="w-3.5 h-3.5 text-slate-400" />
-                  <span>{job.sal}</span>
+                  <span>{job.salary || "Competitive"}</span>
                 </div>
               </div>
 
@@ -127,7 +95,7 @@ export default function JobMatching() {
             {/* Bottom tools */}
             <div className="border-t border-slate-50 pt-4 flex items-center justify-between gap-3 mt-auto">
               <div className="flex gap-1.5 flex-wrap">
-                {job.tags.slice(0, 2).map((t) => (
+                {(job.skills || []).slice(0, 2).map((t: string) => (
                   <Badge
                     key={t}
                     variant="outline"

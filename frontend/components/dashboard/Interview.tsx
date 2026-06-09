@@ -5,16 +5,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Mic, Send, Bot, User, Award, HelpCircle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { useInterview } from "@/src/hooks/useInterview";
 
 export default function Interview() {
-  const questions = [
-    "Tell me about yourself.",
-    "Explain your AI Career Navigator project.",
-    "What is JWT?",
-    "How does React rendering work?",
-  ];
+  const { data, isLoading } = useInterview();
+  const questions = data?.recommendedQuestions ?? [];
+  const readinessScore = data?.readinessScore ?? 82;
 
-  const [activeQuestion, setActiveQuestion] = useState(questions[0]);
+  const [activeQuestion, setActiveQuestion] = useState<string>(questions && questions.length > 0 ? questions[0] : "Tell me about yourself");
   const [messages, setMessages] = useState<Array<{ sender: "bot" | "user"; text: string }>>([
     {
       sender: "bot",
@@ -73,11 +71,11 @@ export default function Interview() {
             <span className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">
               Interview Readiness
             </span>
-            <span className="text-base font-extrabold text-slate-900">82%</span>
+            <span className="text-base font-extrabold text-slate-900">{readinessScore}%</span>
           </div>
-          <Progress value={82} className="h-1.5 bg-slate-100 [&>div]:bg-purple-600" />
+          <Progress value={readinessScore} className="h-1.5 bg-slate-100 [&>div]:bg-purple-600" />
           <div className="text-[10px] text-slate-400 mt-2 font-medium">
-            Acquired based on 4 recent reviews
+            Acquired based on recent reviews
           </div>
         </Card>
       </div>

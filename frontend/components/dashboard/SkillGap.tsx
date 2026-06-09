@@ -5,10 +5,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { AlertCircle, ArrowUpRight, HelpCircle, Check } from "lucide-react";
+import { useSkillGap } from "@/src/hooks/useSkillGap";
 
 export default function SkillGap() {
-  return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
+  const { data, isLoading } = useSkillGap();
+  const strengths = data?.strengths ?? [];
+  const gaps = data?.gaps ?? [];
+  const matchPercent = data?.matchPercent ?? 72;
+  const targetRole = data?.targetRole ?? "Software Development Engineer";
+    return ( <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
       
       {/* Header */}
       <div>
@@ -30,7 +35,7 @@ export default function SkillGap() {
                 Skill Comparison Breakdown
               </h2>
               <div className="text-xs text-slate-400 font-medium">
-                Target Role: <span className="font-bold text-slate-900">Software Development Engineer</span>
+                Target Role: <span className="font-bold text-slate-900">{targetRole}</span>
               </div>
             </div>
 
@@ -42,12 +47,7 @@ export default function SkillGap() {
                   Current Skills (Match)
                 </span>
                 
-                {[
-                  { name: "React", score: 95 },
-                  { name: "Node.js", score: 88 },
-                  { name: "MongoDB", score: 85 },
-                  { name: "AWS", score: 70 },
-                ].map((skill) => (
+                {strengths.map((skill: any) => (
                   <div key={skill.name} className="space-y-2">
                     <div className="flex justify-between items-center text-xs">
                       <span className="font-bold text-slate-800 flex items-center gap-1.5">
@@ -67,12 +67,7 @@ export default function SkillGap() {
                   Missing Skills (Gap)
                 </span>
                 
-                {[
-                  { name: "Docker", priority: "High", gap: 85 },
-                  { name: "System Design", priority: "High", gap: 90 },
-                  { name: "CI/CD", priority: "Medium", gap: 65 },
-                  { name: "PostgreSQL", priority: "Medium", gap: 60 },
-                ].map((skill) => (
+                {gaps.map((skill: any) => (
                   <div key={skill.name} className="space-y-2">
                     <div className="flex justify-between items-center text-xs">
                       <span className="font-bold text-slate-800 flex items-center gap-1.5">
@@ -127,19 +122,19 @@ export default function SkillGap() {
                       strokeWidth="8.5"
                       fill="transparent"
                       strokeDasharray={2 * Math.PI * 60}
-                      strokeDashoffset={2 * Math.PI * 60 * (1 - 0.72)}
+                      strokeDashoffset={2 * Math.PI * 60 * (1 - matchPercent / 100)}
                       strokeLinecap="round"
                     />
                   </svg>
                   <div className="absolute flex flex-col items-center justify-center">
-                    <span className="text-3xl font-extrabold text-slate-900">72%</span>
+                    <span className="text-3xl font-extrabold text-slate-900">{matchPercent}%</span>
                     <span className="text-[10px] text-slate-400 font-bold tracking-wider uppercase mt-0.5">Match</span>
                   </div>
                 </div>
               </div>
 
               <p className="text-xs text-slate-500 leading-relaxed text-center mt-2">
-                Your profile satisfies **72%** of requirements for **SDE** roles. Acquiring the remaining skills will increase your index score.
+                Your profile satisfies **{matchPercent}%** of requirements for **{targetRole}** roles. Acquiring the remaining skills will increase your index score.
               </p>
             </div>
 

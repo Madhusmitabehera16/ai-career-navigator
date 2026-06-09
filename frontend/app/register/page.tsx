@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/src/context/AuthContext";
 import { Compass, Eye, EyeOff, Loader2, Sparkles, AlertCircle, CheckCircle2 } from "lucide-react";
@@ -29,7 +28,6 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
   const { register: registerUser } = useAuth();
-  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loadingState, setLoadingState] = useState(false);
@@ -67,9 +65,10 @@ export default function RegisterPage() {
     try {
       await registerUser(data.name, data.email, data.password);
       showToast("Account created successfully! Redirecting...", "success");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      showToast(err.message || "Registration failed. Please try again.", "error");
+      const message = err instanceof Error ? err.message : "Registration failed. Please try again.";
+      showToast(message, "error");
     } finally {
       setLoadingState(false);
     }
@@ -79,15 +78,25 @@ export default function RegisterPage() {
     <div className="min-h-screen bg-slate-50/50 flex flex-col justify-center items-center p-6 relative overflow-hidden font-sans">
       
       {/* Background blobs */}
-      <div className="absolute w-[400px] h-[300px] bg-gradient-to-r from-amber-100/30 to-orange-100/30 rounded-full filter blur-[60px] top-10 left-10 -z-10" />
-      <div className="absolute w-[350px] h-[350px] bg-gradient-to-r from-yellow-100/20 to-amber-200/20 rounded-full filter blur-[70px] bottom-10 right-10 -z-10" />
-
+      <div className="absolute w-100 h-75 bg-linear-to-r from-amber-100/30 to-orange-100/30 rounded-full filter blur-[60px] top-10 left-10 -z-10" />
+      <div className="absolute w-87.5 h-87.5 bg-linear-to-r from-yellow-100/20 to-amber-200/20 rounded-full filter blur-[70px] bottom-10 right-10 -z-10" />
+<div
+  className="absolute inset-0 z-0"
+  style={{
+    backgroundImage: "url('/bg-pattern.jpg')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    opacity: 1,
+  }}
+/>
+    
       {/* Main Container */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-[440px] my-8"
+        className="relative z-10 w-full max-w-110 my-8"
       >
         {/* Branding header */}
         <div className="flex flex-col items-center mb-8">

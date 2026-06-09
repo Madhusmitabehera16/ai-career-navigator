@@ -5,8 +5,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Award, Briefcase, AlertTriangle, CheckCircle, TrendingUp, Users } from "lucide-react";
+import { useAnalytics } from "@/src/hooks/useAnalytics";
 
 export default function Overview() {
+  const { data, isLoading } = useAnalytics();
+  const resumeScore = data?.resumeScore ?? 89;
+  const jobReadiness = data?.jobReadiness ?? 76;
+  const missingSkills = data?.missingSkills ?? ["Docker", "Kubernetes", "System Design"];
+  const targetRole = data?.targetRole ?? "Software Development Engineer";
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
       
@@ -39,10 +46,10 @@ export default function Overview() {
                 Resume Score
               </span>
               <span className="text-4xl font-extrabold text-slate-900 mt-2">
-                89%
+                {resumeScore}%
               </span>
               <div className="mt-4">
-                <Progress value={89} className="h-1.5 bg-slate-100 [&>div]:bg-[#F4B400]" />
+                <Progress value={resumeScore} className="h-1.5 bg-slate-100 [&>div]:bg-[#F4B400]" />
               </div>
             </div>
           </CardContent>
@@ -64,10 +71,10 @@ export default function Overview() {
                 Job Readiness
               </span>
               <span className="text-4xl font-extrabold text-slate-900 mt-2">
-                76%
+                {jobReadiness}%
               </span>
               <div className="mt-4">
-                <Progress value={76} className="h-1.5 bg-slate-100 [&>div]:bg-blue-600" />
+                <Progress value={jobReadiness} className="h-1.5 bg-slate-100 [&>div]:bg-blue-600" />
               </div>
             </div>
           </CardContent>
@@ -89,7 +96,7 @@ export default function Overview() {
                 Missing Skills
               </span>
               <div className="flex flex-wrap gap-1.5 mt-1.5">
-                {["Docker", "Kubernetes", "System Design"].map((skill) => (
+                {missingSkills.map((skill) => (
                   <Badge
                     key={skill}
                     variant="outline"
@@ -119,7 +126,7 @@ export default function Overview() {
                 Target Role
               </span>
               <span className="text-lg font-bold text-slate-900 mt-2 truncate">
-                Software Development Engineer
+                {targetRole}
               </span>
               <span className="text-xs text-slate-400 mt-2.5">
                 Tracking 4 open positions

@@ -4,58 +4,11 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Play, BookOpen, Clock } from "lucide-react";
+import { useRoadmap } from "@/src/hooks/useRoadmap";
 
 export default function Roadmap() {
-  const steps = [
-    {
-      week: "Week 1",
-      title: "Linux Fundamentals",
-      desc: "Command syntax, SSH configurations, scripting loops, files permission control, and terminal pipelines.",
-      status: "completed",
-    },
-    {
-      week: "Week 2",
-      title: "Docker Containerization",
-      desc: "Dockerfile parameters, multi-stage builders, network overlays, volume allocations, and docker-compose settings.",
-      status: "in-progress",
-    },
-    {
-      week: "Week 3",
-      title: "AWS EC2 Deployment",
-      desc: "VPC setups, public allocation elastic IPs, network security ingress profiles, and basic server provisioning.",
-      status: "pending",
-    },
-    {
-      week: "Week 4",
-      title: "CI/CD Automations",
-      desc: "GitHub Actions workflow pipelines, integration check stages, caching parameters, and automatic cloud deployments.",
-      status: "pending",
-    },
-    {
-      week: "Week 5",
-      title: "PostgreSQL Database Engine",
-      desc: "Schema structures, relational connection tables, query indexes optimizations, pooling, and backup dumps.",
-      status: "pending",
-    },
-    {
-      week: "Week 6",
-      title: "System Design Concepts",
-      desc: "Horizontal scalability profiles, load balancer strategies, application caching, CDNs, and database shard layouts.",
-      status: "pending",
-    },
-    {
-      week: "Week 7",
-      title: "Deploy Final Project",
-      desc: "Release complete hotel reservation booking website using pipeline stages to cloud server instances.",
-      status: "pending",
-    },
-    {
-      week: "Week 8",
-      title: "Mock Interview Preparation",
-      desc: "Practice real-time technical dialogue assessments, review mock logs, and optimize answer frameworks.",
-      status: "pending",
-    },
-  ];
+  const { data, isLoading } = useRoadmap();
+  const steps = data?.steps ?? [];
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">

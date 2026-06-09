@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/src/context/AuthContext";
 import { Compass, Eye, EyeOff, Loader2, Sparkles, AlertCircle, CheckCircle2 } from "lucide-react";
@@ -22,7 +21,6 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const { login } = useAuth();
-  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [loadingState, setLoadingState] = useState(false);
   
@@ -57,9 +55,10 @@ export default function LoginPage() {
     try {
       await login(data.email, data.password);
       showToast("Signed in successfully! Redirecting...", "success");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      showToast(err.message || "Failed to log in. Please check your credentials.", "error");
+      const message = err instanceof Error ? err.message : "Failed to log in. Please check your credentials.";
+      showToast(message, "error");
     } finally {
       setLoadingState(false);
     }
@@ -67,17 +66,27 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-slate-50/50 flex flex-col justify-center items-center p-6 relative overflow-hidden font-sans">
-      
+      <div
+  className="absolute inset-0 z-0"
+  style={{
+    backgroundImage: "url('/bg-pattern.jpg')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    opacity: 1,
+  }}
+/>
+    
       {/* Background blobs */}
-      <div className="absolute w-[400px] h-[300px] bg-gradient-to-r from-amber-100/30 to-orange-100/30 rounded-full filter blur-[60px] top-10 left-10 -z-10" />
-      <div className="absolute w-[350px] h-[350px] bg-gradient-to-r from-yellow-100/20 to-amber-200/20 rounded-full filter blur-[70px] bottom-10 right-10 -z-10" />
+      <div className="absolute w-100 h-75 bg-linear-to-r from-amber-100/30 to-orange-100/30 rounded-full filter blur-[60px] top-10 left-10 -z-10" />
+      <div className="absolute w-87.5 h-87.5 bg-linear-to-r from-yellow-100/20 to-amber-200/20 rounded-full filter blur-[70px] bottom-10 right-10 -z-10" />
 
       {/* Main Container */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-[440px]"
+        className="relative z-10 w-full max-w-110"
       >
         {/* Branding header */}
         <div className="flex flex-col items-center mb-8">
@@ -194,7 +203,7 @@ export default function LoginPage() {
           {/* Prompt to register */}
           <div className="text-center mt-6 pt-6 border-t border-slate-100">
             <span className="text-xs text-slate-500">
-              Don't have an account?{" "}
+              Do not have an account? {" "}
               <Link
                 href="/register"
                 className="font-bold text-[#F4B400] hover:underline"

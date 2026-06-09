@@ -18,6 +18,7 @@ model User {
   email    String @unique
   password String
   role     String @default("user")
+  targetRole String @default("Software Development Engineer")
 
   resumes        Resume[]
   roadmaps       Roadmap[]
@@ -47,8 +48,10 @@ model ResumeAnalysis {
 
   score Int
 
-  strengths  String[]
-  weaknesses String[]
+  strengths      String[]
+  weaknesses     String[]
+  atsImprovements String[] @default([])
+  missingKeywords String[] @default([])
 
   resumeId String @unique
   resume   Resume @relation(fields: [resumeId], references: [id])
@@ -83,11 +86,24 @@ model Roadmap {
   createdAt DateTime @default(now())
 }
 
+model ResumeImprovement {
+  id String @id @default(cuid())
+
+  resumeId String
+  resume   Resume @relation(fields: [resumeId], references: [id])
+  suggestions Json
+
+  createdAt DateTime @default(now())
+}
+
 model JobMatch {
   id String @id @default(cuid())
 
   jobTitle   String
   company    String
+  location   String?
+  salary     String?
+  skills     String[] @default([])
   matchScore Int
 
   userId String

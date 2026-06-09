@@ -32,11 +32,22 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans relative overflow-x-hidden">
+    {/* Background Pattern */}
+<div
+  className="absolute inset-0 z-0"
+  style={{
+    backgroundImage: "url('/bg-pattern.jpg')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    opacity: 1,
+  }}
+/>
       
       {/* -----------------------------------------
            1. Top Yellow Contact Bar
            ----------------------------------------- */}
-      <div className="w-full bg-[#F4B400] text-slate-900 h-11 flex items-center justify-center gap-2 px-4 select-none relative z-50 shadow-sm">
+      {/* <div className="w-full bg-[#F4B400] text-slate-900 h-11 flex items-center justify-center gap-2 px-4 select-none relative z-50 shadow-sm">
         <Phone className="w-4 h-4 text-slate-900 stroke-[2.5]" />
         <span className="font-semibold text-sm">
           Call Us:{" "}
@@ -47,7 +58,7 @@ export default function Home() {
             (202) 555-0136
           </a>
         </span>
-      </div>
+      </div> */}
 
       {/* -----------------------------------------
            2. Main Sticky Navbar
@@ -214,17 +225,17 @@ export default function Home() {
                 Get Started Free
                 <ArrowRight className="w-5 h-5 ml-1.5 group-hover:translate-x-1 transition-transform duration-200" />
               </Button>
-              <Button
+              {/* <Button
                 variant="outline"
                 className="bg-white border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-base px-8 py-6.5 rounded-2xl shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
               >
                 See How It Works
                 <Play className="w-4 h-4 ml-2 fill-slate-700 stroke-none" />
-              </Button>
+              </Button> */}
             </div>
 
             {/* Social Trust Row */}
-            <div className="flex flex-col sm:flex-row items-center gap-4 border-t border-slate-100 pt-8 w-full">
+            {/* <div className="flex flex-col sm:flex-row items-center gap-4 border-t border-slate-100 pt-8 w-full">
               <div className="flex -space-x-2.5">
                 {[
                   { bg: "bg-blue-100", border: "border-blue-400" },
@@ -246,7 +257,7 @@ export default function Home() {
               <p className="text-sm font-medium text-slate-500">
                 students and professionals trust us to build their careers
               </p>
-            </div>
+            </div> */}
           </motion.div>
 
           {/* Hero Right Visuals (3D Mockup Container) */}

@@ -43,12 +43,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
 
-      // Pre-populate with cached user info to speed up UI loading
+      // Safely parse cached user JSON; handle empty or malformed data
       if (savedUser) {
         try {
-          setCurrentUser(JSON.parse(savedUser));
-        } catch {
-          // Ignore parse errors
+          // Ensure the string is non‑empty before parsing
+          const parsed = savedUser.trim() ? JSON.parse(savedUser) : null;
+          if (parsed) setCurrentUser(parsed);
+        } catch (e) {
+          console.warn('Failed to parse cached user JSON:', e);
+          // Remove corrupt data to avoid future errors
+          localStorage.removeItem("user");
         }
       }
 
