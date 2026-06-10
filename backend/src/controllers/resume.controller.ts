@@ -21,21 +21,36 @@ export const upload = async (req: Request, res: Response, next: NextFunction): P
     }
 
     // Upload to Cloudinary using upload_stream (supports buffer)
-    const uploadResult = await new Promise<any>((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream({ resource_type: "auto" }, (error, result) => {
+    console.log("STEP 1: File received:", file.originalname);
+    
+
+const uploadResult = await new Promise<any>((resolve, reject) => {    
+      const stream = cloudinary.uploader.upload_stream(
+  {
+    resource_type: "raw",
+    type: "upload",
+    access_mode: "public",
+    use_filename: true,
+    unique_filename: true,
+  }, (error, result) => {
         if (error) reject(error);
         else resolve(result);
       });
       stream.end(file.buffer);
     });
-
+console.log("STEP 2: Cloudinary upload success");
+console.log("Cloudinary URL:", uploadResult.secure_url);
     // Save resume record
+    console.log("STEP 3: Saving resume to database");
     const resume = await prisma.resume.create({
       data: {
         fileUrl: uploadResult.secure_url,
+        extractedText: file.originalname,
         user: { connect: { id: user.userId } },
       },
     });
+    console.log("STEP 4: Resume saved:", resume.id);
+    
 
     res.status(201).json({ success: true, resume });
   } catch (error) {
@@ -64,15 +79,36 @@ export const parseResume = async (req: Request, res: Response, next: NextFunctio
       res.status(404).json({ success: false, message: "Resume not found." });
       return;
     }
+console.log("Resume URL:", resume.fileUrl);
+console.log("STEP 5: Downloading resume from Cloudinary");
+   const response = await fetch(resume.fileUrl);
 
-    const response = await fetch(resume.fileUrl);
-    if (!response.ok) {
-      throw new Error("Failed to download resume for parsing.");
-    }
+console.log("Cloudinary Status:", response.status);
+console.log("Cloudinary Status Text:", response.statusText);
+console.log("Cloudinary Headers:", Object.fromEntries(response.headers.entries()));
 
+if (!response.ok) {
+  throw new Error(`Failed to download resume. Status: ${response.status}`);
+}
+    console.log("STEP 6: Download successful");
+    
     const buffer = Buffer.from(await response.arrayBuffer());
-    const extractedText = await extractTextFromBuffer(buffer, resume.fileUrl);
+    console.log("Buffer size:", buffer.length);
+console.log("First 20 bytes:", buffer.subarray(0, 20).toString());
+    console.log("Buffer size:", buffer.length);
+console.log("First 20 bytes:", buffer.subarray(0, 20).toString());
+    const extractedText = await extractTextFromBuffer(
+  buffer,
+  "resume.pdf"
+);
+
+console.log(
+  "Extracted text:",
+  extractedText.substring(0, 500)
+);
     const parsed = parseResumeText(extractedText);
+    console.log("PARSED DATA:");
+console.log(JSON.stringify(parsed, null, 2));
 
     const updated = await prisma.resume.update({
       where: { id: resumeId },

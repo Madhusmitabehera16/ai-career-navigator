@@ -1,19 +1,27 @@
 import cors from "cors";
 import express, { Request, Response, NextFunction } from "express";
 import authRouter from "./routes/auth.routes";
-// import resumeRouter from "./routes/resume.routes";
-// import aiRouter from "./routes/ai.routes";
+import resumeRouter from "./routes/resume.routes";
+import aiRouter from "./routes/ai.routes";
+import { prisma } from "./config/prisma";
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://your-vercel-app.vercel.app"
+    ],
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 // Routes
 app.use("/api/auth", authRouter);
-// // app.use("/api/resume", resumeRouter);
-// app.use("/api", aiRouter);
-// app.use("/api", aiRouter);
+app.use("/api/resume", resumeRouter);
+app.use("/api/ai", aiRouter);
 
 app.get("/", (_req, res) => {
   res.json({
@@ -21,7 +29,23 @@ app.get("/", (_req, res) => {
     status: "ok",
   });
 });
+app.get("/db-test", async (_req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
 
+    res.json({
+      success: true,
+      message: "Database connected",
+    });
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      success: false,
+      error: err,
+    });
+  }
+});
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });

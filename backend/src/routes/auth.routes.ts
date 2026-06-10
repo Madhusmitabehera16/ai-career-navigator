@@ -1,6 +1,7 @@
 import { Router } from "express";
 import * as authController from "../controllers/auth.controller";
 import { authenticate } from "../middleware/auth.middleware";
+import cloudinary from "../config/cloudinary";
 
 const router = Router();
 

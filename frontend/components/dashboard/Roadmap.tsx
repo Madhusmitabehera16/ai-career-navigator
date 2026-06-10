@@ -8,7 +8,25 @@ import { useRoadmap } from "@/src/hooks/useRoadmap";
 
 export default function Roadmap() {
   const { data, isLoading } = useRoadmap();
-  const steps = data?.steps ?? [];
+  const title = data?.title || "";
+const steps = data?.steps || [];
+if (isLoading) {
+  return (
+    <div className="flex items-center justify-center h-64">
+      <p className="text-slate-500">Generating roadmap...</p>
+    </div>
+  );
+}
+if (!data || steps.length === 0) {
+  return (
+    <Card className="p-8">
+      <h3 className="text-lg font-bold">No Roadmap Available</h3>
+      <p className="text-slate-500 mt-2">
+        Generate a roadmap first.
+      </p>
+    </Card>
+  );
+}
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
@@ -16,8 +34,8 @@ export default function Roadmap() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-slate-900 font-serif">
-          Career Roadmap
-        </h1>
+  {title || "Career Roadmap"}
+</h1>
         <p className="text-slate-500 text-sm mt-1">
           Your step-by-step personalized learning path to achieve SDE job readiness.
         </p>
@@ -35,16 +53,16 @@ export default function Roadmap() {
             {/* Timeline icon dot overlay */}
             <span
               className={`absolute -left-[33px] md:-left-[37px] top-1.5 w-9 h-9 rounded-full border-4 border-white flex items-center justify-center shadow-sm text-xs font-extrabold z-10 shrink-0 ${
-                step.status === "completed"
+                (step.status || "pending") === "completed"
                   ? "bg-emerald-500 text-white"
-                  : step.status === "in-progress"
+                  : (step.status || "pending") === "in-progress"
                   ? "bg-[#F4B400] text-slate-900 ring-4 ring-amber-50"
                   : "bg-slate-100 text-slate-400"
               }`}
             >
-              {step.status === "completed" ? (
+              {(step.status || "pending") === "completed" ? (
                 <Check className="w-4 h-4 stroke-[2.5]" />
-              ) : step.status === "in-progress" ? (
+              ) : (step.status || "pending") === "in-progress" ? (
                 <Play className="w-3.5 h-3.5 fill-slate-900 stroke-none" />
               ) : (
                 idx + 1
@@ -65,16 +83,16 @@ export default function Roadmap() {
                 
                 <Badge
                   className={`text-[10px] font-bold border-none py-0.5 px-2.5 rounded-full ${
-                    step.status === "completed"
+                    (step.status || "pending") === "completed"
                       ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-50"
-                      : step.status === "in-progress"
+                      : (step.status || "pending") === "in-progress"
                       ? "bg-amber-50 text-amber-800 hover:bg-amber-50 animate-pulse"
                       : "bg-slate-50 text-slate-400 hover:bg-slate-50"
                   }`}
                 >
-                  {step.status === "completed"
+                  {(step.status || "pending") === "completed"
                     ? "Completed"
-                    : step.status === "in-progress"
+                    : (step.status || "pending") === "in-progress"
                     ? "Active Step"
                     : "Locked"}
                 </Badge>
@@ -85,22 +103,17 @@ export default function Roadmap() {
               </p>
 
               {/* Action helper */}
-              <div className="flex gap-4 items-center text-[10.5px] font-bold text-slate-700 border-t border-slate-50 pt-4">
-                <div className="flex items-center gap-1">
-                  <BookOpen className="w-3.5 h-3.5 text-slate-400" />
-                  <span>4 Resources</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5 text-slate-400" />
-                  <span>10 hours</span>
-                </div>
-                {step.status === "in-progress" && (
-                  <button className="ml-auto text-[#F4B400] hover:text-[#E2A600] flex items-center gap-0.5 cursor-pointer">
-                    <span>Continue module</span>
-                    <Play className="w-2.5 h-2.5 fill-current stroke-none" />
-                  </button>
-                )}
-              </div>
+             <div className="border-t border-slate-50 pt-4 flex justify-between items-center">
+  <span className="text-[10px] font-bold text-slate-400 uppercase">
+    {(step.status || "pending").replace("-", " ")}
+  </span>
+
+  {(step.status || "pending") === "in-progress" && (
+    <button className="text-[#F4B400] hover:text-[#E2A600] text-xs font-bold">
+      Continue
+    </button>
+  )}
+</div>
             </Card>
 
           </div>

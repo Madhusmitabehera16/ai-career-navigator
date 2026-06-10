@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import { Upload, Lock, FileText, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/src/context/AuthContext";
+import { uploadResume, parseResume } from "@/src/services/resume.services";
+import api from "@/src/lib/api";
 
 export default function ResumeUpload() {
   const { currentUser } = useAuth();
@@ -59,23 +61,67 @@ export default function ResumeUpload() {
     }
   };
 
-  const triggerUpload = () => {
-    if (!file) {
-      alert("Please choose a file or drag it in first.");
-      return;
-    }
 
-    if (!currentUser) {
-      // User is not logged in: Redirect to login page
-      router.push("/login");
-      return;
-    }
 
+    // Upload file
+   const triggerUpload = async () => {
+  if (!file) {
+    alert("Please select a resume.");
+    return;
+  }
+
+  if (!currentUser) {
+    router.push("/login");
+    return;
+  }
+
+  try {
     setIsUploading(true);
-    setTimeout(() => {
-      router.push("/dashboard");
-    }, 1200);
-  };
+
+    const uploadResponse = await uploadResume(file);
+
+    const resumeId = uploadResponse.resume.id;
+
+    await parseResume(resumeId);
+    const analysisResponse = await api.post(
+  `/ai/analyze/resume/${resumeId}`
+);
+
+const detectedRole =
+  analysisResponse.data.analysis.targetRole;
+
+//    await api.post(`/ai/analyze/resume/${resumeId}`);
+//    console.log("Current User:", currentUser);
+// console.log("Target Role:", currentUser?.targetRole);
+
+await api.post("/ai/skill-gap/create", {
+  targetRole:
+    currentUser?.targetRole || "Software Development Engineer",
+});
+
+await api.post("/ai/roadmap/generate", {
+  targetRole:
+    currentUser?.targetRole || "Software Development Engineer",
+});
+
+await api.post("/ai/jobs/match", {
+  targetRole:
+    currentUser?.targetRole || "Software Development Engineer",
+});
+
+await api.post("/ai/interview/start", {
+ targetRole:
+    currentUser?.targetRole || "Software Development Engineer",
+});
+
+    router.push("/dashboard");
+  } catch (error) {
+    console.error(error);
+    alert("Failed to process resume");
+  } finally {
+    setIsUploading(false);
+  }
+};
 
 
   return (
@@ -183,4 +229,4 @@ export default function ResumeUpload() {
       </motion.div>
     </div>
   );
-}
+};

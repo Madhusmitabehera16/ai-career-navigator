@@ -9,10 +9,28 @@ import { useSkillGap } from "@/src/hooks/useSkillGap";
 
 export default function SkillGap() {
   const { data, isLoading } = useSkillGap();
-  const strengths = data?.strengths ?? [];
-  const gaps = data?.gaps ?? [];
-  const matchPercent = data?.matchPercent ?? 72;
-  const targetRole = data?.targetRole ?? "Software Development Engineer";
+ const strengths = data?.strengths || [];
+const gaps = data?.gaps || [];
+const matchPercent = data?.matchPercent || 0;
+const targetRole = data?.targetRole || "";
+const recommendations = data?.recommendations || [];
+if (isLoading) {
+  return (
+    <div className="flex items-center justify-center h-64">
+      <p className="text-slate-500">Loading skill gap analysis...</p>
+    </div>
+  );
+}
+if (!data) {
+  return (
+    <Card className="p-8">
+      <h3 className="font-bold text-lg">No Skill Gap Analysis Found</h3>
+      <p className="text-slate-500 mt-2">
+        Generate a skill gap analysis first.
+      </p>
+    </Card>
+  );
+}
     return ( <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
       
       {/* Header */}
@@ -134,8 +152,10 @@ export default function SkillGap() {
               </div>
 
               <p className="text-xs text-slate-500 leading-relaxed text-center mt-2">
-                Your profile satisfies **{matchPercent}%** of requirements for **{targetRole}** roles. Acquiring the remaining skills will increase your index score.
-              </p>
+  Your profile satisfies{" "}
+  <span className="font-bold">{matchPercent}%</span> of requirements for{" "}
+  <span className="font-bold">{targetRole}</span> roles.
+</p>
             </div>
 
             <button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm py-3.5 rounded-xl transition-colors duration-200 mt-8 flex items-center justify-center gap-1.5">
@@ -144,7 +164,28 @@ export default function SkillGap() {
             </button>
           </Card>
         </div>
+<Card className="bg-white border-slate-100 rounded-3xl p-6 shadow-sm">
+  <h3 className="text-base font-bold text-slate-900 font-serif mb-4">
+    Recommendations
+  </h3>
 
+  <div className="space-y-3">
+    {recommendations.length > 0 ? (
+      recommendations.map((rec, idx) => (
+        <div
+          key={idx}
+          className="text-xs text-slate-600 bg-slate-50 p-3 rounded-xl"
+        >
+          {rec}
+        </div>
+      ))
+    ) : (
+      <p className="text-xs text-slate-400">
+        No recommendations available.
+      </p>
+    )}
+  </div>
+</Card>
       </div>
 
     </div>

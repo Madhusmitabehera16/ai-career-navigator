@@ -8,7 +8,27 @@ import { useImprovements } from "@/src/hooks/useImprovements";
 
 export default function Improvements() {
   const { data, isLoading } = useImprovements();
-  const suggestions = data?.suggestions ?? [];
+  const suggestions = data?.suggestions || [];
+  if (isLoading) {
+  return (
+    <div className="flex items-center justify-center h-64">
+      <p className="text-slate-500">Generating resume improvements...</p>
+    </div>
+  );
+}
+if (!data || suggestions.length === 0) {
+  return (
+    <Card className="p-8">
+      <h3 className="font-bold text-lg">
+        No Resume Improvements Available
+      </h3>
+
+      <p className="text-slate-500 mt-2">
+        Analyze your resume first to receive improvement suggestions.
+      </p>
+    </Card>
+  );
+}
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
@@ -51,10 +71,10 @@ export default function Improvements() {
                     &ldquo;{item.before}&rdquo;
                   </p>
                 </div>
-                <div className="mt-4 flex items-center gap-1.5 text-[10px] text-rose-500 font-bold">
-                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-                  <span>Weak impact / Vague technologies</span>
-                </div>
+                <div className="mt-4 flex items-center gap-1.5 text-[10px] text-slate-500 font-bold">
+  <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+  <span>Original content</span>
+</div>
               </div>
 
               {/* After Card */}
@@ -72,20 +92,15 @@ export default function Improvements() {
                 </div>
                 
                 <div className="mt-4 flex items-center gap-1.5 text-[10px] text-emerald-600 font-extrabold">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                  <span>Optimal technical keywords matched</span>
-                </div>
+  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+  <span>AI suggested improvement</span>
+</div>
               </div>
 
             </div>
 
             {/* Apply button link */}
-            <div className="mt-4 pt-4 border-t border-slate-50 flex justify-end">
-              <button className="text-xs font-bold text-slate-700 hover:text-slate-900 flex items-center gap-0.5 cursor-pointer">
-                <span>Accept recommendation</span>
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
+
 
           </Card>
         ))}

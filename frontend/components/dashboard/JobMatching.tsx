@@ -8,9 +8,28 @@ import { useJobMatches } from "@/src/hooks/useJobMatches";
 
 export default function JobMatching() {
   const { data, isLoading } = useJobMatches();
-  const jobs = data?.jobs ?? [];
+  const jobs = data?.jobs || [];
   const [appliedJobs, setAppliedJobs] = useState<Record<number, boolean>>({});
+if (isLoading) {
+  return (
+    <div className="flex items-center justify-center h-64">
+      <p className="text-slate-500">Finding matching jobs...</p>
+    </div>
+  );
+}
+if (!data || jobs.length === 0) {
+  return (
+    <Card className="p-8">
+      <h3 className="font-bold text-lg">
+        No Job Matches Found
+      </h3>
 
+      <p className="text-slate-500 mt-2">
+        Generate job matches after analyzing your resume.
+      </p>
+    </Card>
+  );
+}
   const handleApply = (idx: number) => {
     setAppliedJobs((prev) => ({
       ...prev,
@@ -82,11 +101,11 @@ export default function JobMatching() {
               <div className="space-y-2 mb-6">
                 <div className="flex items-center gap-2 text-xs text-slate-500">
                   <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                  <span>{job.location || "Remote"}</span>
+                  <span>{job.location || "Not specified"}</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-slate-500">
                   <DollarSign className="w-3.5 h-3.5 text-slate-400" />
-                  <span>{job.salary || "Competitive"}</span>
+                  <span>{job.salary || "Not disclosed"}</span>
                 </div>
               </div>
 
@@ -104,11 +123,11 @@ export default function JobMatching() {
                     {t}
                   </Badge>
                 ))}
-                {job.tags.length > 2 && (
-                  <span className="text-[9px] text-slate-400 font-bold self-center">
-                    +1 more
-                  </span>
-                )}
+               {(job.skills?.length || 0) > 2 && (
+  <span className="text-[9px] text-slate-400 font-bold self-center">
+    +{job.skills!.length - 2} more
+  </span>
+)}
               </div>
 
               {appliedJobs[idx] ? (
@@ -121,7 +140,7 @@ export default function JobMatching() {
                   onClick={() => handleApply(idx)}
                   className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-2.5 px-5 rounded-xl transition-all duration-200 flex items-center gap-1 cursor-pointer"
                 >
-                  <span>Apply Now</span>
+                  <span>Save Job</span>
                   <ArrowUpRight className="w-3.5 h-3.5" />
                 </button>
               )}

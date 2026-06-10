@@ -8,9 +8,30 @@ import { useResumeAnalysis } from "@/src/hooks/useResumeAnalysis";
 
 export default function ResumeAnalysis() {
   const { data, isLoading } = useResumeAnalysis();
-  const skills = data?.skills ?? ["React", "Next.js", "Node.js"];
-  const summary = data?.summary ?? "Professional developer with relevant experience.";
-  const suggestions = data?.suggestions ?? [];
+  const skills = data?.skills || [];
+const summary = data?.summary || "";
+const suggestions = data?.suggestions || [];
+const experience = data?.experience || [];
+const educationSummary = data?.educationSummary || "";
+
+if (isLoading) {
+  return (
+    <div className="flex justify-center items-center h-64">
+      <p className="text-slate-500">Loading resume analysis...</p>
+    </div>
+  );
+}
+
+if (!data) {
+  return (
+    <Card className="p-8">
+      <h3 className="font-bold text-lg">No Resume Analysis Available</h3>
+      <p className="text-slate-500 mt-2">
+        Upload and analyze a resume first.
+      </p>
+    </Card>
+  );
+}
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
@@ -63,51 +84,39 @@ export default function ResumeAnalysis() {
             </div>
 
             {/* Projects */}
-            <div className="border-b border-slate-100 pb-6 mb-6">
-              <span className="text-xs font-extrabold text-[#F4B400] uppercase tracking-wider">
-                Projects Evaluated
-              </span>
-              <div className="space-y-4 mt-4">
-                {[
-                  {
-                    title: "Hotel Booking Platform",
-                    desc: "A full-stack booking system featuring user secure checkout, calendar reservation widgets, and dashboard tracking.",
-                  },
-                  {
-                    title: "AI Career Navigator",
-                    desc: "Interactive recruitment tool delivering parsed resume feedback, custom timelines, and mock voice dialogues.",
-                  },
-                ].map((project, idx) => (
-                  <div key={idx} className="bg-slate-50/60 border border-slate-100 rounded-2xl p-4">
-                    <h4 className="text-sm font-bold text-slate-800">
-                      {project.title}
-                    </h4>
-                    <p className="text-xs text-slate-500 mt-1.5 leading-relaxed">
-                      {project.desc}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
+          <div className="border-b border-slate-100 pb-6 mb-6">
+  <span className="text-xs font-extrabold text-[#F4B400] uppercase tracking-wider">
+    Projects Evaluated
+  </span>
+
+  <div className="space-y-4 mt-4">
+    {experience.length > 0 ? (
+      experience.map((item, idx) => (
+        <div
+          key={idx}
+          className="bg-slate-50/60 border border-slate-100 rounded-2xl p-4"
+        >
+          <p className="text-xs text-slate-500 leading-relaxed">
+            {item}
+          </p>
+        </div>
+      ))
+    ) : (
+      <p className="text-sm text-slate-400">
+        No experience information found.
+      </p>
+    )}
+  </div>
+</div>
 
             {/* Education */}
             <div>
               <span className="text-xs font-extrabold text-[#F4B400] uppercase tracking-wider">
                 Education Detected
               </span>
-              <div className="flex justify-between items-start mt-3">
-                <div>
-                  <h4 className="text-sm font-bold text-slate-800">
-                    B.Tech Computer Science
-                  </h4>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    Graduated with Honours
-                  </p>
-                </div>
-                <Badge className="bg-blue-50 text-blue-700 hover:bg-blue-50 border-none font-bold">
-                  Verified Degree
-                </Badge>
-              </div>
+              <p className="text-sm text-slate-600 mt-3 leading-relaxed">
+  {educationSummary || "No education information found."}
+</p>
             </div>
 
           </Card>
@@ -117,63 +126,10 @@ export default function ResumeAnalysis() {
         <div className="space-y-6">
           
           {/* ATS Score card */}
-          <Card className="bg-white border-slate-100 rounded-3xl p-6 shadow-sm">
-            <h3 className="text-base font-bold text-slate-900 font-serif mb-4">
-              Formatting Evaluation
-            </h3>
-            
-            <div className="flex flex-col gap-5">
-              {(suggestions.length > 0 
-                ? suggestions.slice(0, 4).map((sugg: string, i: number) => ({
-                    title: sugg,
-                    status: i % 2 === 0 ? "pass" : "fail",
-                    desc: i % 2 === 0 ? "Looks good" : "Needs improvement"
-                  }))
-                : [
-                    { title: "ATS Layout Compatibility", status: "pass", desc: "No tables/graphics blocking indexers." },
-                    { title: "Contact Information Check", status: "pass", desc: "Found phone, email, and location details." },
-                    { title: "Action Verb Frequency", status: "fail", desc: "Requires stronger leading statements." },
-                    { title: "Section Headers Structure", status: "pass", desc: "Uses standard parseable names." },
-                  ]
-              ).map((item, idx) => (
-                <div key={idx} className="flex gap-3 items-start">
-                  {item.status === "pass" ? (
-                    <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                  ) : (
-                    <AlertCircle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
-                  )}
-                  <div>
-                    <h4 className="text-xs font-bold text-slate-800 leading-tight">
-                      {item.title}
-                    </h4>
-                    <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
-                      {item.desc}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
+        
 
           {/* Quick AI Optimizer advice */}
-          <Card className="bg-slate-900 text-white border-none rounded-3xl p-6 shadow-md relative overflow-hidden">
-            <div className="absolute right-[-10px] top-[-10px] w-24 h-24 bg-white/5 rounded-full blur-xl pointer-events-none" />
-            <div className="flex gap-1.5 items-center text-[#F4B400] mb-4">
-              <Sparkles className="w-4 h-4 fill-current" />
-              <span className="text-xs font-extrabold tracking-wider uppercase">
-                AI Career Tip
-              </span>
-            </div>
-            <h4 className="text-sm font-bold text-white mb-2 leading-snug">
-              Boost your score from 89% to 95%
-            </h4>
-            <p className="text-xs text-slate-300 leading-relaxed mb-6">
-              Stronger resume bullet structures improve recruiter readability. Replace weak action verbs in your experience section to boost evaluation scores.
-            </p>
-            <button className="bg-white hover:bg-slate-50 text-slate-900 font-bold text-xs py-3 px-5 rounded-xl transition-colors duration-200">
-              Optimize Resume Now
-            </button>
-          </Card>
+        
 
         </div>
 

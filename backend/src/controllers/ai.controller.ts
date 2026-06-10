@@ -141,6 +141,7 @@ export const createSkillGap = async (req: AuthRequest, res: Response, next: Next
 
     const resume = await prisma.resume.findFirst({ where: { userId: user.userId }, orderBy: { createdAt: "desc" } });
     if (!resume || !resume.extractedText) {
+      console.log("Resume text length:", resume?.extractedText?.length);
       res.status(404).json({ success: false, message: "Parsed resume not found. Upload and parse your resume first." });
       return;
     }
@@ -459,11 +460,11 @@ export const getSkillGapData = async (req: AuthRequest, res: Response, next: Nex
     res.status(200).json({
       success: true,
       skillGap: {
-        strengths: currentSkills.map((s: string) => ({ name: s, score: Math.floor(Math.random() * 30) + 70 })),
+        strengths: currentSkills.map((s: string) => ({ name: s, score: 80 })),
         gaps: missingSkills.map((s: string, i: number) => ({
           name: s,
           priority: i < 2 ? "High" : "Medium",
-          gap: Math.floor(Math.random() * 30) + 60,
+          gap: 75,
         })),
         targetRole,
         matchPercent: Math.floor(currentSkills.length / Math.max(currentSkills.length + missingSkills.length, 1) * 100),
@@ -561,8 +562,8 @@ export const getJobMatchingData = async (req: AuthRequest, res: Response, next: 
         jobs: jobMatches.map((j) => ({
           jobTitle: j.jobTitle,
           company: j.company,
-          location: "Remote",
-          salary: "$100k - $150k",
+          location: "",
+salary: "",
           skills: [],
           matchScore: j.matchScore,
         })),
@@ -596,12 +597,51 @@ export const getUserAnalytics = async (req: AuthRequest, res: Response, next: Ne
       analytics: {
         resumeScore,
         jobReadiness: Math.max(50, Math.floor(resumeScore * 0.85)),
-        missingSkills: ["Docker", "Kubernetes", "System Design"],
+        missingSkills: analysis?.missingKeywords || [],
         targetRole: userProfile?.targetRole || "Software Development Engineer",
-        resumeSummary: "Your resume shows strong fundamentals in web development.",
+        resumeSummary:
+  analysis?.strengths?.join(", ") ||
+  "Resume analyzed successfully.",
       },
     });
   } catch (error) {
     next(error);
   }
 };
+
+export const getImprovementsData = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const user = req.user;
+    if (!user?.userId) {
+      res.status(401).json({ success: false, message: "Unauthorized" });
+      return;
+    }
+
+    const resume = await prisma.resume.findFirst({ where: { userId: user.userId }, orderBy: { createdAt: "desc" } });
+    if (!resume) {
+      res.status(200).json({
+        success: true,
+        improvements: {
+          suggestions: [],
+        },
+      });
+      return;
+    }
+
+    const improvement = await prisma.resumeImprovement.findFirst({
+      where: { resumeId: resume.id },
+      orderBy: { createdAt: "desc" },
+    });
+
+  const suggestions = (improvement?.suggestions as any) || [];
+    res.status(200).json({
+      success: true,
+      improvements: {
+        suggestions,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+

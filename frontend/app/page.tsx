@@ -85,7 +85,7 @@ export default function Home() {
             <a href="#" className="text-sm font-semibold text-slate-900 relative py-1 after:absolute after:bottom-0 after:left-0 after:w-6 after:h-0.5 after:bg-[#F4B400] after:rounded-full">
               Home
             </a>
-            {["Features", "Roadmap", "Resume Analyzer", "Mock Interview", "Resources"].map((link) => (
+            {[].map((link) => (
               <a
                 key={link}
                 href="#"

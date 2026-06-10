@@ -14,7 +14,7 @@ app.use(express_1.default.json());
 // Routes
 app.use("/api/auth", auth_routes_1.default);
 app.use("/api/resume", resume_routes_1.default);
-app.use("/api", ai_routes_1.default);
+app.use("/api/ai", ai_routes_1.default);
 app.get("/", (_req, res) => {
     res.json({
         name: "AI Career Navigator API",

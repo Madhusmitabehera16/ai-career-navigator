@@ -1,5 +1,7 @@
-import pdfParse from "pdf-parse";
+const pdfParse = require("pdf-parse");
 import mammoth from "mammoth";
+
+
 
 export interface ParsedResumeData {
   name: string;
@@ -66,26 +68,45 @@ const getSection = (text: string, titlePatterns: string[]): string[] => {
   return sectionLines.map((line) => line.replace(/^[-•*\s]+/, "")).filter(Boolean);
 };
 
-export const extractTextFromBuffer = async (buffer: Buffer, fileName: string): Promise<string> => {
-  const lowerName = fileName.toLowerCase();
-  if (lowerName.endsWith(".pdf")) {
-    const data = await (pdfParse as any)(buffer as any);
-    return normalizeText(data.text || "");
-  }
+// const pdfParse = require("pdf-parse");
+// import mammoth from "mammoth";
 
-  if (lowerName.endsWith(".docx")) {
-    const result = await mammoth.extractRawText({ buffer });
-    return normalizeText(result.value || "");
-  }
+export const extractTextFromBuffer = async (
+  buffer: Buffer,
+  fileName: string
+): Promise<string> => {
+  console.log("File name:", fileName);
+  console.log("Buffer length:", buffer.length);
 
-  // Fallback: try PDF parser first, then raw text.
   try {
-    const data = await (pdfParse as any)(buffer as any);
-    return normalizeText(data.text || "");
-  } catch {
-    const result = await mammoth.extractRawText({ buffer });
-    return normalizeText(result.value || "");
+    console.log("Trying PDF parser...");
+
+    const pdfData = await pdfParse(buffer);
+
+    console.log("PDF text length:", pdfData.text?.length);
+
+    if (pdfData.text) {
+      return pdfData.text;
+    }
+  } catch (err) {
+    console.error("PDF PARSE ERROR:", err);
   }
+
+  try {
+    console.log("Trying DOCX parser...");
+
+    const result = await mammoth.extractRawText({ buffer });
+
+    console.log("DOCX text length:", result.value?.length);
+
+    if (result.value) {
+      return result.value;
+    }
+  } catch (err) {
+    console.error("DOCX PARSE ERROR:", err);
+  }
+
+  throw new Error("Unsupported resume format");
 };
 
 export const parseResumeText = (text: string): ParsedResumeData => {

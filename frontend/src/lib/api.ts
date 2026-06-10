@@ -52,7 +52,7 @@ api.interceptors.response.use(
     }
 
     const axiosError = error as AxiosError;
-    const responseData = axiosError.response?.data;
+    const responseData = axiosError.response?.data as any;
     const rawMessage = responseData?.message ?? axiosError.message ?? "An unexpected error occurred.";
     const message = normalizeErrorMessage(rawMessage);
 

@@ -9,47 +9,39 @@ import { useInterview } from "@/src/hooks/useInterview";
 
 export default function Interview() {
   const { data, isLoading } = useInterview();
-  const questions = data?.recommendedQuestions ?? [];
-  const readinessScore = data?.readinessScore ?? 82;
+  const questions = data?.recommendedQuestions || [];
+const readinessScore = data?.readinessScore || 0;
+const suggestions = data?.suggestions || [];
+const [activeQuestion, setActiveQuestion] = useState(
+  questions[0] || ""
+);
+if (isLoading) {
+  return (
+    <div className="flex items-center justify-center h-64">
+      <p className="text-slate-500">Loading interview questions...</p>
+    </div>
+  );
+}
 
-  const [activeQuestion, setActiveQuestion] = useState<string>(questions && questions.length > 0 ? questions[0] : "Tell me about yourself");
-  const [messages, setMessages] = useState<Array<{ sender: "bot" | "user"; text: string }>>([
-    {
-      sender: "bot",
-      text: "Hello! Welcome to your AI Mock Interview. Let's begin. Please introduce yourself and talk about your primary development focus.",
-    },
-  ]);
-  const [inputValue, setInputValue] = useState("");
+if (!data) {
+  return (
+    <Card className="p-8">
+      <h3 className="font-bold text-lg">
+        No Interview Session Found
+      </h3>
 
-  const handleSend = () => {
-    if (!inputValue.trim()) return;
+      <p className="text-slate-500 mt-2">
+        Generate interview questions first.
+      </p>
+    </Card>
+  );
+}
 
-    // Add user message
-    const userMsg = inputValue;
-    setMessages((prev) => [...prev, { sender: "user", text: userMsg }]);
-    setInputValue("");
+  
 
-    // Simulate bot response after a brief pause
-    setTimeout(() => {
-      let replyText = "That's a solid answer! Let's build on that. Tell me how you would design a scalable backend cache for this flow.";
-      if (activeQuestion.includes("JWT")) {
-        replyText = "Great explanation of JSON Web Tokens. Can you explain the difference between local storage security and HTTP-only cookie storage?";
-      } else if (activeQuestion.includes("React rendering")) {
-        replyText = "Excellent summary of Virtual DOM reconciliation. How does React 18's Concurrent Mode help improve user experience?";
-      }
-      setMessages((prev) => [...prev, { sender: "bot", text: replyText }]);
-    }, 1000);
-  };
+ 
 
-  const selectQuestion = (q: string) => {
-    setActiveQuestion(q);
-    setMessages([
-      {
-        sender: "bot",
-        text: `Great. Let's focus on this question: "${q}". How would you explain this concept to an interviewer?`,
-      },
-    ]);
-  };
+  
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
@@ -94,7 +86,7 @@ export default function Interview() {
             {questions.map((q) => (
               <button
                 key={q}
-                onClick={() => selectQuestion(q)}
+                onClick={() => setActiveQuestion(q)}
                 className={`w-full text-left p-3.5 rounded-2xl border text-xs leading-normal font-semibold transition-all duration-200 cursor-pointer ${
                   activeQuestion === q
                     ? "bg-purple-50 border-purple-100 text-purple-700"
@@ -109,7 +101,7 @@ export default function Interview() {
           <div className="mt-4 pt-4 border-t border-slate-50 shrink-0">
             <button className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-3 rounded-xl transition-colors duration-200 flex items-center justify-center gap-1.5">
               <Mic className="w-3.5 h-3.5" />
-              <span>Voice Interview Mode</span>
+              
             </button>
           </div>
         </Card>
@@ -135,55 +127,37 @@ export default function Interview() {
           </div>
 
           {/* Messages list area */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-6">
-            {messages.map((msg, idx) => (
-              <div
-                key={idx}
-                className={`flex items-start gap-3 max-w-[85%] ${
-                  msg.sender === "user" ? "ml-auto flex-row-reverse" : "mr-auto"
-                }`}
-              >
-                <div
-                  className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
-                    msg.sender === "user"
-                      ? "bg-blue-100 text-blue-700"
-                      : "bg-purple-100 text-purple-700"
-                  }`}
-                >
-                  {msg.sender === "user" ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
-                </div>
-                <div
-                  className={`rounded-2xl p-4 text-xs leading-relaxed ${
-                    msg.sender === "user"
-                      ? "bg-blue-600 text-white rounded-tr-sm"
-                      : "bg-slate-50 border border-slate-100 text-slate-700 rounded-tl-sm"
-                  }`}
-                >
-                  {msg.text}
-                </div>
-              </div>
-            ))}
-          </div>
+          
+         <div className="flex-1 p-8">
+  <h3 className="text-lg font-bold text-slate-900 mb-4">
+    Selected Question
+  </h3>
 
-          {/* Chat input block */}
-          <div className="border-t border-slate-100 p-4 bg-white flex gap-3 items-center shrink-0">
-            <input
-              type="text"
-              placeholder="Type your response here..."
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleSend();
-              }}
-              className="flex-1 bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-xs text-slate-700 focus:outline-none focus:ring-1 focus:ring-purple-600"
-            />
-            <button
-              onClick={handleSend}
-              className="w-10 h-10 rounded-xl bg-slate-900 hover:bg-slate-800 text-white flex items-center justify-center shrink-0 transition-colors duration-200 cursor-pointer"
-            >
-              <Send className="w-4 h-4" />
-            </button>
+  <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6">
+    <p className="text-sm text-slate-700">
+      {activeQuestion || "Select a question"}
+    </p>
+  </div>
+
+  {suggestions.length > 0 && (
+    <div className="mt-6">
+      <h4 className="text-sm font-bold mb-3">
+        Interview Suggestions
+      </h4>
+
+      <div className="space-y-3">
+        {suggestions.map((s, idx) => (
+          <div
+            key={idx}
+            className="bg-purple-50 rounded-xl p-3 text-xs text-purple-700"
+          >
+            {s}
           </div>
+        ))}
+      </div>
+    </div>
+  )}
+</div>
 
         </Card>
 

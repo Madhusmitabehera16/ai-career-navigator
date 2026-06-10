@@ -64,12 +64,12 @@ export default function Dashboard() {
     { id: "resume-analysis", label: "Resume Analysis", icon: <FileText className="w-4 h-4" /> },
     { id: "skill-gap", label: "Skill Gap Analysis", icon: <BarChart2 className="w-4 h-4" /> },
     { id: "roadmap", label: "Career Roadmap", icon: <Map className="w-4 h-4" /> },
-    { id: "projects", label: "Project Suggestions", icon: <Lightbulb className="w-4 h-4" /> },
+    // { id: "projects", label: "Project Suggestions", icon: <Lightbulb className="w-4 h-4" /> },
     { id: "interview", label: "Mock Interview", icon: <Mic className="w-4 h-4" /> },
     { id: "improvements", label: "Resume Improvements", icon: <ArrowUp className="w-4 h-4" /> },
     { id: "job-matching", label: "Job Matching", icon: <Briefcase className="w-4 h-4" /> },
-    { id: "admin", label: "Admin Dashboard", icon: <Sliders className="w-4 h-4" /> },
-    { id: "settings", label: "Settings", icon: <SettingsIcon className="w-4 h-4" /> },
+    // { id: "admin", label: "Admin Dashboard", icon: <Sliders className="w-4 h-4" /> },
+    // { id: "settings", label: "Settings", icon: <SettingsIcon className="w-4 h-4" /> },
   ] as const;
 
   const renderActiveContent = () => {
