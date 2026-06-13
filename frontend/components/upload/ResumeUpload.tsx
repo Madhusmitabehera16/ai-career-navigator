@@ -125,7 +125,7 @@ export default function ResumeUpload() {
 };
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-12">
+    <div id="upload-section" className="max-w-4xl mx-auto px-6 py-12">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -147,71 +147,71 @@ export default function ResumeUpload() {
             onDragOver={handleDrag}
             onDragLeave={handleDrag}
             onDrop={handleDrop}
-            className={`w-full max-w-2xl bg-gradient-to-br from-indigo-700 to-violet-800 text-white rounded-2xl p-8 md:p-12 relative border-2 border-dashed transition-all duration-300 ${
-              isDragActive ? "border-[#F4B400] scale-[1.01]" : "border-white/30"
+            className={`w-full max-w-2xl  text-black rounded-2xl p-5 sm:p-8 md:p-12 relative border-2 border-dashed transition-all duration-300 ${
+              isDragActive ? "border-[#F4B400] scale-[1.01]" : "border-black"
             }`}
           >
             {/* Top Right Privacy Badge */}
-            <div className="absolute top-4 right-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-3 py-1 flex items-center gap-1.5 select-none">
-              <Lock className="w-3.5 h-3.5 text-white" />
-              <span className="text-[10px] font-bold text-white tracking-wider uppercase">
+            <div className="hidden xs:flex absolute top-4 right-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-3 py-1 items-center gap-1.5 select-none">
+              <Lock className="w-3.5 h-3.5 text-black" />
+              <span className="text-[10px] font-bold text-black tracking-wider uppercase">
                 100% Privacy
               </span>
             </div>
 
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center mt-4 xs:mt-0">
               {/* Animated icon indicator */}
               <div className="mb-6 relative">
                 {file ? (
-                  <div className="bg-[#F4B400] w-16 h-16 rounded-full flex items-center justify-center shadow-lg">
-                    <CheckCircle className="w-8 h-8 text-slate-900 stroke-[2.5]" />
+                  <div className="bg-[#F4B400] w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shadow-lg">
+                    <CheckCircle className="w-7 h-7 sm:w-8 sm:h-8 text-slate-900 stroke-[2.5]" />
                   </div>
                 ) : (
-                  <div className="bg-white/15 w-16 h-16 rounded-full flex items-center justify-center shadow-inner">
-                    <Upload className="w-7 h-7 text-white stroke-[2.5]" />
+                  <div className="bg-white/15 w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shadow-inner">
+                    <Upload className="w-6 h-6 sm:w-7 sm:h-7 text-black stroke-[2.5]" />
                   </div>
                 )}
               </div>
 
               {file ? (
-                <div className="flex flex-col items-center gap-2 mb-4">
-                  <div className="flex items-center gap-2 text-white bg-white/10 px-4 py-2 rounded-xl border border-white/10 max-w-md">
+                <div className="flex flex-col items-center gap-2 mb-4 w-full">
+                  <div className="flex flex-wrap items-center justify-center gap-1.5 text-black bg-white/10 px-3 py-2 rounded-xl border border-white/10 max-w-full">
                     <FileText className="w-4 h-4 text-[#F4B400] shrink-0" />
-                    <span className="text-xs font-bold truncate max-w-[240px]">
+                    <span className="text-xs font-bold truncate max-w-[120px] xs:max-w-[180px] sm:max-w-[240px]">
                       {file.name}
                     </span>
-                    <span className="text-[10px] text-white/60">
+                    <span className="text-[10px] text-black/60 shrink-0">
                       ({(file.size / 1024 / 1024).toFixed(2)} MB)
                     </span>
                   </div>
                   <button
                     onClick={() => setFile(null)}
-                    className="text-xs text-white/60 hover:text-white underline cursor-pointer"
+                    className="text-xs text-black hover:text-black underline cursor-pointer"
                   >
                     Remove file
                   </button>
                 </div>
               ) : (
-                <label className="cursor-pointer group flex flex-col items-center">
+                <label className="cursor-pointer group flex flex-col items-center w-full">
                   <input
                     type="file"
                     accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                     className="hidden"
                     onChange={handleChange}
                   />
-                  <h3 className="text-lg md:text-xl font-bold tracking-tight text-white mb-2">
+                  <h3 className="text-sm sm:text-lg md:text-xl font-bold tracking-tight text-black mb-2 text-center px-2">
                     Drop your resume here or{" "}
-                    <span className="underline text-[#F4B400] group-hover:text-[#ffc738] transition-colors duration-200">
+                    <span className="underline text-[#82CAFF] group-hover:text-[#82CAFF] transition-colors duration-200">
                       choose a file.
                     </span>
                   </h3>
-                  <p className="text-xs text-white/60 max-w-sm">
+                  <p className="text-[10px] sm:text-xs text-black/60 max-w-sm text-center px-4">
                     English resumes in PDF or DOCX only. Max 2MB file size.
                   </p>
                 </label>
               )}
             </div>
-        </div>
+          </div>
 
         {/* Target Job Details Information Fields */}
         <div className="w-full max-w-2xl mt-8 text-left space-y-4 bg-slate-50/40 border border-slate-100 rounded-2xl p-6">
@@ -270,7 +270,7 @@ export default function ResumeUpload() {
           <Button
             onClick={triggerUpload}
             disabled={isUploading || !file || !companyName.trim() || !roleTitle.trim() || !jobDescription.trim()}
-            className={`bg-[#F4B400] hover:bg-[#E2A600] text-slate-900 disabled:bg-slate-100 disabled:text-slate-400 font-extrabold text-base px-10 py-6.5 rounded-2xl shadow-[0_8px_24px_rgba(244,180,0,0.25)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 ${
+            className={`bg-[#82CAFF] hover:bg-[#6BBEF7] text-white disabled:bg-slate-100 disabled:text-slate-400 font-extrabold text-base px-10 py-6.5 rounded-2xl shadow-[0_8px_24px_rgba(135, 206, 235,0.25)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 ${
               isUploading ? "animate-pulse" : ""
             }`}
           >

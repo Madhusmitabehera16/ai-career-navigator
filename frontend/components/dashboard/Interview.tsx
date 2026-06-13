@@ -184,10 +184,10 @@ export default function Interview() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-[600px]">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-0 lg:min-h-[600px]">
         
         {/* Left Side: Question List Selector */}
-        <Card className="bg-white border-slate-100 rounded-3xl p-5 shadow-sm lg:col-span-4 flex flex-col h-[600px] overflow-hidden">
+        <Card className="bg-white border-slate-100 rounded-3xl p-5 shadow-sm lg:col-span-4 flex flex-col h-[300px] lg:h-[600px] overflow-hidden">
           <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-1.5 shrink-0">
             <HelpCircle className="w-4 h-4 text-purple-600" />
             Interview Questions

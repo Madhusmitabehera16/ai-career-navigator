@@ -164,7 +164,7 @@ if (!data) {
             </button>
           </Card>
         </div>
-<Card className="bg-white border-slate-100 rounded-3xl p-6 shadow-sm">
+<Card className="bg-white border-slate-100 rounded-3xl p-6 shadow-sm lg:col-span-12">
   <h3 className="text-base font-bold text-slate-900 font-serif mb-4">
     Recommendations
   </h3>

@@ -4,6 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useAuth } from "@/src/context/AuthContext";
 import {
   Phone,
@@ -63,27 +64,33 @@ export default function Home() {
       {/* -----------------------------------------
            2. Main Sticky Navbar
            ----------------------------------------- */}
-      <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-slate-100 py-3.5">
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+      <header className="sticky top-0 z-40 w-full bg-transparent backdrop-blur-3xl border-b border-slate-100 py-3 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
           {/* Logo */}
-          <a href="#" className="flex items-center gap-2.5 group">
-            <div className="bg-[#F4B400] w-10.5 h-10.5 rounded-xl flex items-center justify-center shadow-[0_4px_12px_rgba(244,180,0,0.35)] group-hover:scale-105 transition-transform duration-300">
-              <Compass className="w-5.5 h-5.5 text-white stroke-[2.5]" />
-            </div>
+          <Link href="/" className="flex items-center gap-1.5 sm:gap-2.5 group shrink-0">
+  <Image
+    src="/logo1.png" // place your transparent logo in public/logo.png
+    alt="Logo"
+    width={42}
+    height={42}
+    className="w-8 h-8 sm:w-10.5 sm:h-10.5 object-contain group-hover:scale-105 transition-transform duration-300"
+    priority
+  />
+
             <div className="flex flex-col">
-              <span className="text-xl font-bold font-serif leading-none tracking-tight text-slate-900">
-                Career<span className="text-[#F4B400]">Navigator</span>
+              <span className="text-sm sm:text-xl font-bold font-serif leading-none tracking-tight text-slate-900">
+                Jobbly
               </span>
-              <span className="text-[10px] font-medium text-slate-500 tracking-wider uppercase mt-0.5">
+              <span className="hidden xs:inline text-[8px] sm:text-[10px] font-medium text-slate-500 tracking-wider uppercase mt-0.5">
                 Your AI Career Guide
               </span>
             </div>
-          </a>
+          </Link>
 
           {/* Navigation links (Desktop) */}
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#" className="text-sm font-semibold text-slate-900 relative py-1 after:absolute after:bottom-0 after:left-0 after:w-6 after:h-0.5 after:bg-[#F4B400] after:rounded-full">
-              Home
+            <a href="#" className="">
+              
             </a>
             {[].map((link) => (
               <a
@@ -97,20 +104,20 @@ export default function Home() {
           </nav>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-3.5">
+          <div className="flex items-center gap-2 sm:gap-3.5">
             {loading ? (
-              <div className="h-9 w-24 bg-slate-100 animate-pulse rounded-xl" />
+              <div className="h-8 w-20 sm:h-9 sm:w-24 bg-slate-100 animate-pulse rounded-xl" />
             ) : currentUser ? (
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 sm:gap-4">
                 {/* Dashboard Button */}
                 <Link href="/dashboard">
-                  <Button className="bg-[#F4B400] hover:bg-[#E2A600] text-slate-900 font-bold text-xs px-4 py-2 h-9 rounded-xl shadow-sm hover:scale-[1.01] active:scale-[0.99] transition-all">
+                  <Button className="bg-[#F4B400] hover:bg-[#E2A600] text-slate-900 font-bold text-[10px] sm:text-xs px-2.5 py-1.5 sm:px-4 sm:py-2 h-8 sm:h-9 rounded-xl shadow-sm hover:scale-[1.01] active:scale-[0.99] transition-all">
                     Dashboard
                   </Button>
                 </Link>
 
                 {/* Profile Avatar & Name */}
-                <div className="hidden sm:flex items-center gap-2">
+                <div className="hidden md:flex items-center gap-2">
                   <Avatar className="w-8 h-8 border border-slate-150">
                     <AvatarFallback className="bg-amber-100 text-slate-700 font-extrabold text-[10px]">
                       {currentUser.name
@@ -123,7 +130,7 @@ export default function Home() {
                         : "U"}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-xs font-bold text-slate-800 truncate max-w-[100px]">
+                  <span className="text-xs font-bold text-slate-800 truncate max-w-[80px]">
                     {currentUser.name}
                   </span>
                 </div>
@@ -132,10 +139,10 @@ export default function Home() {
                 <Button
                   onClick={logout}
                   variant="ghost"
-                  className="text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl h-9 w-9 p-0 flex items-center justify-center cursor-pointer"
+                  className="text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl h-8 w-8 sm:h-9 sm:w-9 p-0 flex items-center justify-center cursor-pointer"
                   title="Log Out"
                 >
-                  <LogOut className="w-4.5 h-4.5" />
+                  <LogOut className="w-4 sm:w-4.5 h-4 sm:h-4.5" />
                 </Button>
               </div>
             ) : (
@@ -143,14 +150,14 @@ export default function Home() {
                 <Link href="/login">
                   <Button
                     variant="ghost"
-                    className="text-sm font-semibold text-slate-700 hover:text-slate-900 cursor-pointer"
+                    className="text-xs sm:text-sm font-semibold text-slate-700 hover:text-slate-900 cursor-pointer px-2 py-1 h-8 sm:h-9"
                   >
                     Log In
                   </Button>
                 </Link>
                 <Link href="/register">
                   <Button
-                    className="bg-[#F4B400] hover:bg-[#E2A600] text-slate-900 font-bold text-sm px-5 py-2.5 h-9 rounded-xl shadow-[0_4px_14px_rgba(244,180,0,0.25)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer"
+                    className="bg-blue-500 hover:bg-blue-500 text-white font-bold text-xs sm:text-sm px-3 py-1.5 sm:px-5 sm:py-2.5 h-8 sm:h-9 rounded-xl shadow-[0_4px_14px_rgba(135, 206, 235,0.25)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer"
                   >
                     Sign Up
                   </Button>
@@ -185,7 +192,7 @@ export default function Home() {
             className="lg:col-span-5 flex flex-col items-center lg:items-start text-center lg:text-left"
           >
             <div className="inline-flex items-center gap-1.5 bg-slate-50 border border-slate-100 rounded-full px-3.5 py-1.5 mb-6 shadow-sm">
-              <Sparkles className="w-4 h-4 text-[#F4B400] fill-[#F4B400]/10" />
+              <Sparkles className="w-4 h-4 text-blue-500 fill-[#82CAFF]/10" />
               <span className="text-xs font-semibold text-slate-600">
                 Next-Gen Career Navigation Powered by AI
               </span>
@@ -193,7 +200,7 @@ export default function Home() {
 
             <h1 className="text-4xl sm:text-5xl xl:text-6.5xl font-extrabold text-slate-900 tracking-tight leading-none mb-6">
               Your{" "}
-              <span className="relative inline-block text-[#F4B400]">
+              <span className="relative inline-block text-blue-500">
                 AI-Powered
                 <svg
                   className="absolute left-0 bottom-[-6px] w-full h-2"
@@ -203,7 +210,7 @@ export default function Home() {
                 >
                   <path
                     d="M2 8C50.5 3 130.5 1.5 258 5"
-                    stroke="#F4B400"
+                    stroke="#82CAFF"
                     strokeWidth="4.5"
                     strokeLinecap="round"
                   />
@@ -219,12 +226,27 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mb-12">
-              <Button
-                className="bg-[#F4B400] hover:bg-[#E2A600] text-slate-900 font-extrabold text-base px-8 py-6.5 rounded-2xl shadow-[0_8px_20px_rgba(244,180,0,0.25)] hover:scale-[1.02] active:scale-[0.98] group transition-all duration-200"
-              >
-                Get Started Free
-                <ArrowRight className="w-5 h-5 ml-1.5 group-hover:translate-x-1 transition-transform duration-200" />
-              </Button>
+            <Button
+  onClick={() => {
+    const el = document.getElementById("upload-section");
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  }}
+ className="
+  jelly-btn
+  bg-blue-500
+  hover:bg-blue-500
+  text-white
+  font-extrabold
+  px-8 py-6.5
+  rounded-2xl
+  shadow-[0_8px_20px_rgba(130,202,255,0.35),inset_0_4px_8px_rgba(255,255,255,0.3)]
+  active:scale-95
+  transition-all
+"
+>
+  Get Started Free
+  <ArrowRight className="w-5 h-5 ml-1.5 group-hover:translate-x-1 transition-transform duration-200" />
+</Button>
               {/* <Button
                 variant="outline"
                 className="bg-white border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-base px-8 py-6.5 rounded-2xl shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
@@ -261,7 +283,7 @@ export default function Home() {
           </motion.div>
 
           {/* Hero Right Visuals (3D Mockup Container) */}
-          <div className="lg:col-span-7 flex justify-center items-center h-[540px] md:h-[600px] w-full relative z-10">
+          <div className="hidden lg:flex lg:col-span-7 justify-center items-center h-[540px] md:h-[600px] w-full relative z-10">
             
             {/* Soft Warm Background Blur Blob */}
             <div className="absolute w-[500px] h-[400px] bg-gradient-to-r from-amber-50 to-orange-50/50 rounded-full filter blur-[50px] -bottom-10 right-10 -z-10 opacity-75" />
@@ -279,6 +301,9 @@ export default function Home() {
                 transition={{ duration: 0.8, delay: 0.2 }}
                 whileHover={{ y: -10, rotate: -2, scale: 1.02, zIndex: 40 }}
                 className="absolute w-[240px] h-[370px] bg-white border border-slate-100 rounded-3xl p-5 shadow-[0_20px_40px_rgba(0,0,0,0.04),0_1px_3px_rgba(0,0,0,0.01)] left-6 sm:left-12 bottom-20 z-10 cursor-pointer origin-bottom transition-all duration-300"
+                style={{
+                  clipPath: "polygon(0 0, calc(100% - 32px) 0, 100% 32px, 100% 100%, 0 100%)",
+                }}
               >
                 {/* Blue Curl corner indicator */}
                 <div
@@ -406,11 +431,16 @@ export default function Home() {
                 transition={{ duration: 0.8, delay: 0.2 }}
                 whileHover={{ y: -10, rotate: 2, scale: 1.02, zIndex: 40 }}
                 className="absolute w-[250px] h-[390px] bg-white border border-slate-100 rounded-3xl p-5 shadow-[0_20px_40px_rgba(0,0,0,0.04),0_1px_3px_rgba(0,0,0,0.01)] right-6 sm:right-12 bottom-12 z-20 cursor-pointer origin-bottom transition-all duration-300"
+                style={{
+                  clipPath: "polygon(0 0, calc(100% - 32px) 0, 100% 32px, 100% 100%, 0 100%)",
+                }}
               >
                 {/* Purple Curl corner indicator */}
-                <div
-                  className="absolute top-0 right-0 w-8 h-8 bg-purple-600 rounded-bl-xl shadow-[-2px_2px_4px_rgba(0,0,0,0.15)] z-20"
-                  style={{ clipPath: "polygon(100% 0, 0 0, 100% 100%)", transform: "scaleX(-1) rotate(90deg)" }}
+               <div
+                  className="absolute top-0 right-0 w-8 h-8 bg-purple-600 rounded-bl-xl shadow-[-2px_2px_4px_rgba(0,0,0,0.15)] z-20 pointer-events-none"
+                  style={{
+                    transformOrigin: "top right",
+                  }}
                 />
 
                 {/* Header */}
@@ -497,27 +527,27 @@ export default function Home() {
                    ----------------------------------------- */}
 
               {/* Top Right Floater (Female Avatar + Yellow bubble) */}
-              <motion.div
+              {/* <motion.div
                 animate={{ y: [0, -6, 0] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                 className="absolute top-14 right-20 sm:right-28 flex items-center gap-2.5 z-30"
               >
                 <div className="bg-[#F4B400] text-slate-900 font-semibold text-[11px] h-8 px-3 rounded-full flex items-center shadow-md border-r-2 border-[#F4B400]">
-                  Looking for a Role?
+                  
                 </div>
-                <div className="w-9 h-9 rounded-full bg-slate-200 border-2 border-white overflow-hidden shadow-md">
+                <div className="w-9 h-9 rounded-full bg-slate-200 border-2 border-white overflow-hidden shadow-md"> */}
                   {/* Flat vector avatar illustration inside SVG */}
-                  <svg viewBox="0 0 40 40" className="w-full h-full">
+                  {/* <svg viewBox="0 0 40 40" className="w-full h-full">
                     <circle cx="20" cy="20" r="20" fill="#FCE7F3"/>
                     <path d="M6 34C6 28 12 25 20 25C28 25 34 28 34 34" fill="#EC4899"/>
                     <circle cx="20" cy="15" r="7" fill="#FDBA74"/>
                     <path d="M12 13C12 8 28 8 28 13" fill="#D946EF" stroke="#D946EF" strokeWidth="1.5"/>
                   </svg>
                 </div>
-              </motion.div>
+              </motion.div> */}
 
               {/* Bottom Right Floater (Blue bubble + Male Avatar) */}
-              <motion.div
+              {/* <motion.div
                 animate={{ y: [0, 6, 0] }}
                 transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
                 className="absolute bottom-2 right-20 sm:right-32 flex items-center gap-2.5 z-30"
@@ -526,7 +556,7 @@ export default function Home() {
                   Analyzing profile...
                 </div>
                 <div className="w-9 h-9 rounded-full bg-slate-200 border-2 border-white overflow-hidden shadow-md">
-                  {/* Flat vector avatar illustration inside SVG */}
+                  Flat vector avatar illustration inside SVG
                   <svg viewBox="0 0 40 40" className="w-full h-full">
                     <circle cx="20" cy="20" r="20" fill="#E0F2FE"/>
                     <path d="M6 34C6 28 12 25 20 25C28 25 34 28 34 34" fill="#0284C7"/>
@@ -534,15 +564,15 @@ export default function Home() {
                     <path d="M13 11C15 8 25 8 27 11" fill="#0369A1" stroke="#0369A1" strokeWidth="1.5"/>
                   </svg>
                 </div>
-              </motion.div>
+              </motion.div> */}
 
               {/* Floating expand/action circle button */}
-              <motion.div
+              {/* <motion.div
                 whileHover={{ scale: 1.1 }}
                 className="absolute bottom-20 right-2 sm:right-10 w-12 h-12 rounded-full bg-white border border-slate-100 shadow-[0_12px_24px_rgba(0,0,0,0.08)] flex items-center justify-center text-slate-800 cursor-pointer z-40"
               >
                 <Maximize2 className="w-5 h-5 stroke-[2.5]" />
-              </motion.div>
+              </motion.div> */}
 
             </div>
 

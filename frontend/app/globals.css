@@ -49,6 +49,13 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 }
+:root {
+  --font-primary: var(--font-open-sans);
+}
+
+* {
+  font-family: var(--font-primary);
+}
 
 :root {
   --background: oklch(1 0 0);
@@ -84,7 +91,33 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 }
+.jelly-btn:hover {
+  animation: jello-horizontal 0.9s both;
+}
 
+@keyframes jello-horizontal {
+  0% {
+    transform: scale3d(1, 1, 1);
+  }
+  30% {
+    transform: scale3d(1.15, 0.85, 1);
+  }
+  40% {
+    transform: scale3d(0.85, 1.15, 1);
+  }
+  50% {
+    transform: scale3d(1.08, 0.92, 1);
+  }
+  65% {
+    transform: scale3d(0.96, 1.04, 1);
+  }
+  75% {
+    transform: scale3d(1.04, 0.96, 1);
+  }
+  100% {
+    transform: scale3d(1, 1, 1);
+  }
+}
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
