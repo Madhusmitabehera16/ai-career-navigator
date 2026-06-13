@@ -26,8 +26,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AI Career Navigator",
-  description: "Your AI-powered career growth assistant.",
+  title: "Jobbly",
+  description: "Your AI powered career growth assistant.",
 };
 
 export default function RootLayout({
