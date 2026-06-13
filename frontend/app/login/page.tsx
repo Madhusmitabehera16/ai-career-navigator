@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -91,12 +92,17 @@ export default function LoginPage() {
         {/* Branding header */}
         <div className="flex flex-col items-center mb-8">
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="bg-[#F4B400] w-10 h-10 rounded-xl flex items-center justify-center shadow-[0_4px_12px_rgba(244,180,0,0.25)] group-hover:scale-105 transition-transform duration-300">
-              <Compass className="w-5.5 h-5.5 text-white stroke-[2.5]" />
-            </div>
+           <Image
+               src="/logo1.png" // place your transparent logo in public/logo.png
+               alt="Logo"
+               width={42}
+               height={42}
+               className="w-8 h-8 sm:w-10.5 sm:h-10.5 object-contain group-hover:scale-105 transition-transform duration-300"
+               priority
+             />
             <div className="flex flex-col">
-              <span className="text-lg font-bold font-serif leading-none text-slate-900">
-                Career<span className="text-[#F4B400]">Navigator</span>
+              <span className="text-lg font-bold font-serif leading-none text-blue-500">
+                Jobbly
               </span>
               <span className="text-[9px] font-medium text-slate-500 tracking-wider uppercase mt-0.5">
                 Your AI Career Guide
@@ -187,7 +193,7 @@ export default function LoginPage() {
             <Button
               type="submit"
               disabled={loadingState}
-              className="w-full bg-[#F4B400] hover:bg-[#E2A600] text-slate-900 font-extrabold h-11.5 rounded-xl shadow-[0_4px_14px_rgba(244,180,0,0.2)] transition-all hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-2 mt-2"
+              className="w-full bg-blue-500 hover:bg-blue-600 text-slate-900 font-extrabold h-11.5 rounded-xl  transition-all hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-2 mt-2"
             >
               {loadingState ? (
                 <>
