@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import Image from "next/image";
 import {
   Compass,
   LayoutDashboard,
@@ -111,11 +112,16 @@ export default function Dashboard() {
         <aside className="hidden lg:flex flex-col w-64 border-r border-slate-100 bg-white sticky top-0 h-screen shrink-0">
           {/* Logo */}
           <div className="px-6 py-5 border-b border-slate-50 flex items-center gap-2">
-            <div className="bg-[#F4B400] w-8 h-8 rounded-lg flex items-center justify-center shadow-sm">
-              <Compass className="w-4.5 h-4.5 text-white stroke-[2.5]" />
-            </div>
+           <Image
+                         src="/logo1.png" // place your transparent logo in public/logo.png
+                         alt="Logo"
+                         width={42}
+                         height={42}
+                         className="w-8 h-8 sm:w-10.5 sm:h-10.5 object-contain group-hover:scale-105 transition-transform duration-300"
+                         priority
+                       />
             <span className="text-lg font-bold font-serif text-slate-900 tracking-tight">
-              Career<span className="text-[#F4B400]">Navigator</span>
+              Jobbly
             </span>
           </div>
 
