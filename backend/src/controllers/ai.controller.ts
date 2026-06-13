@@ -302,24 +302,50 @@ export const evaluateInterview = async (req: AuthRequest, res: Response, next: N
       return;
     }
 
-    const prompt = `You are a technical interviewer. Evaluate the following answer for the question: ${question}. Return strict JSON with score (0-100), feedback, and improvements. Answer: ${answer}`;
+    const prompt = `You are a technical interviewer evaluating a candidate's answer to the following question: "${question}".
+Analyze the user's answer and return a strict JSON response with no markdown formatting. The JSON must contain exactly these keys:
+- "score": Overall Score (0-10) as a number
+- "correctnessPercentage": Correctness Percentage (0-100) as a number
+- "communicationScore": Communication Score (0-100) as a number
+- "technicalAccuracyScore": Technical Accuracy Score (0-100) as a number
+- "confidenceScore": Confidence Score (0-100) as a number
+- "strengths": Array of strings highlighting strengths
+- "weaknesses": Array of strings highlighting weaknesses
+- "missingKeyPoints": Array of strings detailing missing concepts
+- "improvementSuggestions": Array of strings providing specific suggestions
+- "recommendedAnswer": A concise, interview-quality ideal answer string
+
+Candidate's Answer: "${answer}"`;
+
     const raw = await generateGeminiResponse(prompt);
     const parsed = parseStrictJson(raw);
 
-    const score = Number(parsed.score) || 0;
-    const feedback = typeof parsed.feedback === "string" ? parsed.feedback : "";
-    const improvements = typeof parsed.improvements === "string" ? parsed.improvements : "";
+    const evaluation = {
+      score: Number(parsed.score) || 0,
+      correctnessPercentage: Number(parsed.correctnessPercentage) || 0,
+      communicationScore: Number(parsed.communicationScore) || 0,
+      technicalAccuracyScore: Number(parsed.technicalAccuracyScore) || 0,
+      confidenceScore: Number(parsed.confidenceScore) || 0,
+      strengths: Array.isArray(parsed.strengths) ? parsed.strengths : [],
+      weaknesses: Array.isArray(parsed.weaknesses) ? parsed.weaknesses : [],
+      missingKeyPoints: Array.isArray(parsed.missingKeyPoints) ? parsed.missingKeyPoints : [],
+      improvementSuggestions: Array.isArray(parsed.improvementSuggestions) ? parsed.improvementSuggestions : [],
+      recommendedAnswer: typeof parsed.recommendedAnswer === "string" ? parsed.recommendedAnswer : ""
+    };
 
-    const answers = Array.isArray(interview.answers) ? [...interview.answers, { question, answer, score, feedback, improvements }] : [{ question, answer, score, feedback, improvements }];
+    const newAnswerRecord = { question, answer, evaluation };
+    const answers = Array.isArray(interview.answers) ? [...interview.answers, newAnswerRecord] : [newAnswerRecord];
+    const overallScore = Math.round(evaluation.score * 10); // scale 0-10 to 0-100 for overall interview score if needed
+
     const updated = await prisma.mockInterview.update({
       where: { id: interviewId },
       data: {
         answers,
-        score,
+        score: overallScore,
       },
     });
 
-    res.status(200).json({ success: true, evaluation: { score, feedback, improvements }, interview: updated });
+    res.status(200).json({ success: true, evaluation, interview: updated });
   } catch (error) {
     next(error);
   }
@@ -544,9 +570,11 @@ export const getInterviewData = async (req: AuthRequest, res: Response, next: Ne
     res.status(200).json({
       success: true,
       interview: {
+        id: interview?.id || "",
         readinessScore: avgScore,
         recommendedQuestions: interview?.questions || [],
         suggestions: [],
+        history: interview?.answers || [],
       },
     });
   } catch (error) {

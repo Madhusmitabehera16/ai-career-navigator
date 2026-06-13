@@ -33,10 +33,31 @@ export interface RoadmapData {
   steps: RoadmapStep[];
 }
 
+export interface InterviewEvaluation {
+  score: number;
+  correctnessPercentage: number;
+  communicationScore: number;
+  technicalAccuracyScore: number;
+  confidenceScore: number;
+  strengths: string[];
+  weaknesses: string[];
+  missingKeyPoints: string[];
+  improvementSuggestions: string[];
+  recommendedAnswer: string;
+}
+
+export interface InterviewAnswer {
+  question: string;
+  answer: string;
+  evaluation: InterviewEvaluation;
+}
+
 export interface InterviewData {
+  id: string;
   readinessScore: number;
   recommendedQuestions: string[];
   suggestions: string[];
+  history: InterviewAnswer[];
 }
 
 export interface JobMatchData {

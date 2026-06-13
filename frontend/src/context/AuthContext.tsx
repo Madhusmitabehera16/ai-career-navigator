@@ -98,7 +98,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       setCurrentUser(user);
-      router.push("/dashboard");
+      router.push("/");
     } catch (error) {
       throw error;
     } finally {
@@ -118,7 +118,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       setCurrentUser(user);
-      router.push("/dashboard");
+      router.push("/");
     } catch (error) {
       throw error;
     } finally {

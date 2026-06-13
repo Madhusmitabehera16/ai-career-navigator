@@ -64,71 +64,65 @@ export default function ResumeUpload() {
     }
   };
 
-  const triggerUpload = async () => {
-    if (!file) {
-      alert("Please select a resume.");
-      return;
+ const triggerUpload = async () => {
+  if (!file) {
+    alert("Please select a resume.");
+    return;
+  }
+
+  if (!companyName.trim()) {
+    alert("Please enter the target company name.");
+    return;
+  }
+
+  if (!roleTitle.trim()) {
+    alert("Please enter the target role title.");
+    return;
+  }
+
+  if (!jobDescription.trim()) {
+    alert("Please enter the job description.");
+    return;
+  }
+
+  if (!currentUser) {
+    router.push("/login");
+    return;
+  }
+
+  try {
+    setIsUploading(true);
+
+    console.log("Uploading resume...");
+
+    const response = await uploadResume(
+      file,
+      companyName.trim(),
+      roleTitle.trim(),
+      jobDescription.trim()
+    );
+
+    console.log("Upload response:", response);
+
+    if (!response?.success) {
+      throw new Error("Resume processing failed");
     }
 
-    if (!companyName.trim()) {
-      alert("Please enter the target company name.");
-      return;
-    }
+    console.log("Analysis complete. Redirecting...");
 
-    if (!roleTitle.trim()) {
-      alert("Please enter the target role title.");
-      return;
-    }
+    router.push("/dashboard");
+  } catch (error: any) {
+    console.error("Upload Error:", error);
 
-    if (!jobDescription.trim()) {
-      alert("Please enter the job description.");
-      return;
-    }
-
-    if (!currentUser) {
-      router.push("/login");
-      return;
-    }
-
-    try {
-      setIsUploading(true);
-
-      console.log("Uploading resume...");
-
-      const response = await uploadResume(
-        file,
-        companyName.trim(),
-        roleTitle.trim(),
-        jobDescription.trim()
-      );
-
-      console.log("Upload response:", response);
-
-      if (!response?.success) {
-        throw new Error("Resume processing failed");
-      }
-
-      console.log("Analysis complete. Redirecting...");
-
-      router.push("/dashboard");
-    } catch (error: any) {
-      console.error("Upload Error Details:", error);
-      
-      const backendMessage = error?.response?.data?.message;
-      const errorMessage = error?.message;
-      
-      console.error("Backend response message:", backendMessage);
-      
-      alert(
-        backendMessage ||
-        errorMessage ||
-        "Failed to process resume due to an unknown error."
-      );
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
+    alert(
+      error?.response?.data?.message ||
+      error?.message ||
+      "Failed to process resume"
+    );
+  } finally {
+    setIsUploading(false);
+  }
+};
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-12">

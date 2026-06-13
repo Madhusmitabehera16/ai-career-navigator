@@ -17,11 +17,11 @@ model User {
   updatedAt      DateTime        @updatedAt
   targetRole     String          @default("Software Development Engineer")
   jobMatches     JobMatch[]
+  jobTargets     JobTarget[]
   mockInterviews MockInterview[]
   resumes        Resume[]
   roadmaps       Roadmap[]
   skillGaps      SkillGap[]
-  jobTargets     JobTarget[]
 }
 
 model Resume {
@@ -54,10 +54,10 @@ model SkillGap {
   targetRole       String
   currentSkills    String[]
   missingSkills    String[]
-  weakSkills       String[] @default([])
-  learningPriority String   @default("Medium")
   userId           String
   createdAt        DateTime @default(now())
+  learningPriority String   @default("Medium")
+  weakSkills       String[] @default([])
   user             User     @relation(fields: [userId], references: [id])
 }
 
@@ -107,7 +107,7 @@ model JobTarget {
   companyName       String
   roleTitle         String
   jobDescription    String
-  jobReadinessScore Int      @default(0)
   createdAt         DateTime @default(now())
+  jobReadinessScore Int      @default(0)
   user              User     @relation(fields: [userId], references: [id])
 }
