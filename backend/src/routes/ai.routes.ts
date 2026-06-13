@@ -38,6 +38,18 @@ router.get("/test-gemini", async (req, res) => {
 
   res.json({ result });
 });
+router.get("/test-gemini", async (_req, res) => {
+  try {
+    const result = await generateGeminiResponse(
+      "Say hello"
+    );
+
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json(err);
+  }
+});
 // Dashboard endpoints for hooks
 router.post("/analytics", authenticate as any, getUserAnalytics as any);
 router.post("/resume-analysis", authenticate as any, getResumeAnalysisData as any);

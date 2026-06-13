@@ -21,6 +21,7 @@ model User {
   resumes        Resume[]
   roadmaps       Roadmap[]
   skillGaps      SkillGap[]
+  jobTargets     JobTarget[]
 }
 
 model Resume {
@@ -43,17 +44,21 @@ model ResumeAnalysis {
   createdAt       DateTime @default(now())
   atsImprovements String[] @default([])
   missingKeywords String[] @default([])
+  matchPercentage Int      @default(0)
+  recommendations String[] @default([])
   resume          Resume   @relation(fields: [resumeId], references: [id])
 }
 
 model SkillGap {
-  id            String   @id @default(cuid())
-  targetRole    String
-  currentSkills String[]
-  missingSkills String[]
-  userId        String
-  createdAt     DateTime @default(now())
-  user          User     @relation(fields: [userId], references: [id])
+  id               String   @id @default(cuid())
+  targetRole       String
+  currentSkills    String[]
+  missingSkills    String[]
+  weakSkills       String[] @default([])
+  learningPriority String   @default("Medium")
+  userId           String
+  createdAt        DateTime @default(now())
+  user             User     @relation(fields: [userId], references: [id])
 }
 
 model Roadmap {
@@ -96,3 +101,13 @@ model MockInterview {
   user      User     @relation(fields: [userId], references: [id])
 }
 
+model JobTarget {
+  id                String   @id @default(cuid())
+  userId            String
+  companyName       String
+  roleTitle         String
+  jobDescription    String
+  jobReadinessScore Int      @default(0)
+  createdAt         DateTime @default(now())
+  user              User     @relation(fields: [userId], references: [id])
+}

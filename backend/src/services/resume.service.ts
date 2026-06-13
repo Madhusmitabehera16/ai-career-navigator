@@ -75,38 +75,59 @@ export const extractTextFromBuffer = async (
   buffer: Buffer,
   fileName: string
 ): Promise<string> => {
-  console.log("File name:", fileName);
+  console.log("Parsing file name:", fileName);
   console.log("Buffer length:", buffer.length);
 
-  try {
-    console.log("Trying PDF parser...");
+  const isDocx = fileName.toLowerCase().endsWith(".docx");
 
-    const pdfData = await pdfParse(buffer);
-
-    console.log("PDF text length:", pdfData.text?.length);
-
-    if (pdfData.text) {
-      return pdfData.text;
+  if (isDocx) {
+    try {
+      console.log("Detected DOCX file extension. Trying DOCX parser first...");
+      const result = await mammoth.extractRawText({ buffer });
+      console.log("DOCX text length:", result.value?.length);
+      if (result.value) {
+        return result.value;
+      }
+    } catch (err) {
+      console.warn("DOCX PARSE ERROR, falling back to PDF parser:", err);
     }
-  } catch (err) {
-    console.error("PDF PARSE ERROR:", err);
+  } else {
+    try {
+      console.log("Trying PDF parser...");
+      const pdfData = await pdfParse(buffer);
+      console.log("PDF text length:", pdfData.text?.length);
+      if (pdfData.text) {
+        return pdfData.text;
+      }
+    } catch (err) {
+      console.warn("PDF PARSE ERROR, falling back to DOCX parser:", err);
+    }
   }
 
-  try {
-    console.log("Trying DOCX parser...");
-
-    const result = await mammoth.extractRawText({ buffer });
-
-    console.log("DOCX text length:", result.value?.length);
-
-    if (result.value) {
-      return result.value;
+  // Fallbacks
+  if (isDocx) {
+    try {
+      console.log("DOCX parsing failed, running PDF parser fallback...");
+      const pdfData = await pdfParse(buffer);
+      if (pdfData.text) {
+        return pdfData.text;
+      }
+    } catch (err) {
+      console.error("PDF fallback parser failed:", err);
     }
-  } catch (err) {
-    console.error("DOCX PARSE ERROR:", err);
+  } else {
+    try {
+      console.log("PDF parsing failed, running DOCX parser fallback...");
+      const result = await mammoth.extractRawText({ buffer });
+      if (result.value) {
+        return result.value;
+      }
+    } catch (err) {
+      console.error("DOCX fallback parser failed:", err);
+    }
   }
 
-  throw new Error("Unsupported resume format");
+  throw new Error("Unsupported resume format or parsing failed for both PDF and DOCX");
 };
 
 export const parseResumeText = (text: string): ParsedResumeData => {

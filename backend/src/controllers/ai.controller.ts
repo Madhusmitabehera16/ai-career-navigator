@@ -413,7 +413,10 @@ export const getResumeAnalysisData = async (req: AuthRequest, res: Response, nex
       return;
     }
 
-    const analysis = await prisma.resumeAnalysis.findUnique({ where: { resumeId: resume.id } });
+    const analysis = await prisma.resumeAnalysis.findFirst({
+      where: { resumeId: resume.id },
+      orderBy: { createdAt: "desc" },
+    });
     const parsed = parseResumeText(resume.extractedText);
 
     res.status(200).json({
@@ -423,7 +426,7 @@ export const getResumeAnalysisData = async (req: AuthRequest, res: Response, nex
         skills: analysis?.strengths || parsed.skills || [],
         experience: parsed.experience || [],
         educationSummary: parsed.education && parsed.education.length > 0 ? parsed.education[0] : "Bachelor's degree",
-        suggestions: analysis?.atsImprovements || [],
+        suggestions: analysis?.recommendations || analysis?.atsImprovements || [],
       },
     });
   } catch (error) {
@@ -445,17 +448,26 @@ export const getSkillGapData = async (req: AuthRequest, res: Response, next: Nex
       return;
     }
 
-    const userProfile = await prisma.user.findUnique({ where: { id: user.userId } });
-    const targetRole = userProfile?.targetRole || "Software Development Engineer";
+    const latestJobTarget = await prisma.jobTarget.findFirst({
+      where: { userId: user.userId },
+      orderBy: { createdAt: "desc" },
+    });
+    const targetRole = latestJobTarget?.roleTitle || "Software Development Engineer";
 
     const skills = extractSkillsFromText(resume.extractedText);
     const skillGap = await prisma.skillGap.findFirst({
-      where: { userId: user.userId, targetRole },
+      where: { userId: user.userId },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const analysis = await prisma.resumeAnalysis.findFirst({
+      where: { resumeId: resume.id },
       orderBy: { createdAt: "desc" },
     });
 
     const currentSkills = skillGap?.currentSkills || skills;
     const missingSkills = skillGap?.missingSkills || [];
+    const recommendations = analysis?.recommendations || ["Learn Docker", "Practice system design", "Study CI/CD pipelines"];
 
     res.status(200).json({
       success: true,
@@ -467,8 +479,8 @@ export const getSkillGapData = async (req: AuthRequest, res: Response, next: Nex
           gap: 75,
         })),
         targetRole,
-        matchPercent: Math.floor(currentSkills.length / Math.max(currentSkills.length + missingSkills.length, 1) * 100),
-        recommendations: ["Learn Docker", "Practice system design", "Study CI/CD pipelines"],
+        matchPercent: analysis?.matchPercentage || Math.floor(currentSkills.length / Math.max(currentSkills.length + missingSkills.length, 1) * 100),
+        recommendations,
       },
     });
   } catch (error) {
@@ -582,26 +594,74 @@ export const getUserAnalytics = async (req: AuthRequest, res: Response, next: Ne
       return;
     }
 
+    const latestJobTarget = await prisma.jobTarget.findFirst({
+      where: { userId: user.userId },
+      orderBy: { createdAt: "desc" },
+    });
+
     const resume = await prisma.resume.findFirst({ where: { userId: user.userId }, orderBy: { createdAt: "desc" } });
-    const analysis = await prisma.resumeAnalysis.findFirst({
-      where: { resume: { userId: user.userId } },
+    
+    const analysis = resume
+      ? await prisma.resumeAnalysis.findFirst({
+          where: { resumeId: resume.id },
+          orderBy: { createdAt: "desc" },
+        })
+      : null;
+
+    const skillGap = await prisma.skillGap.findFirst({
+      where: { userId: user.userId },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const improvement = resume
+      ? await prisma.resumeImprovement.findFirst({
+          where: { resumeId: resume.id },
+          orderBy: { createdAt: "desc" },
+        })
+      : null;
+
+    const interview = await prisma.mockInterview.findFirst({
+      where: { userId: user.userId },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const roadmap = await prisma.roadmap.findFirst({
+      where: { userId: user.userId },
       orderBy: { createdAt: "desc" },
     });
 
     const resumeScore = analysis?.score || 0;
-    const skills = resume?.extractedText ? extractSkillsFromText(resume.extractedText) : [];
-    const userProfile = await prisma.user.findUnique({ where: { id: user.userId } });
+    const jobReadiness = latestJobTarget?.jobReadinessScore || 0;
+    const matchPercentage = analysis?.matchPercentage || 0;
+    const missingSkills = skillGap?.missingSkills || analysis?.missingKeywords || [];
+    
+    const companyName = latestJobTarget?.companyName || "";
+    const targetRole = latestJobTarget?.roleTitle || (user as any).targetRole || "Software Development Engineer";
+
+    const improvementsCount = improvement
+      ? (Array.isArray(improvement.suggestions) ? improvement.suggestions.length : 0)
+      : 0;
+
+    const questionsCount = interview
+      ? (Array.isArray(interview.questions) ? interview.questions.length : 0)
+      : 0;
+
+    const steps = roadmap ? (roadmap.steps as any) : [];
+    const roadmapStepsCount = Array.isArray(steps) ? steps.length : 0;
 
     res.status(200).json({
       success: true,
       analytics: {
         resumeScore,
-        jobReadiness: Math.max(50, Math.floor(resumeScore * 0.85)),
-        missingSkills: analysis?.missingKeywords || [],
-        targetRole: userProfile?.targetRole || "Software Development Engineer",
-        resumeSummary:
-  analysis?.strengths?.join(", ") ||
-  "Resume analyzed successfully.",
+        jobReadiness,
+        matchPercentage,
+        missingSkills,
+        companyName,
+        targetRole,
+        resumeSummary: analysis?.strengths?.join(", ") || "Resume analyzed successfully.",
+        improvementsCount,
+        questionsCount,
+        roadmapStepsCount,
       },
     });
   } catch (error) {

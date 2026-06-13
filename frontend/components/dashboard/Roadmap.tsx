@@ -103,17 +103,17 @@ if (!data || steps.length === 0) {
               </p>
 
               {/* Action helper */}
-             <div className="border-t border-slate-50 pt-4 flex justify-between items-center">
-  <span className="text-[10px] font-bold text-slate-400 uppercase">
-    {(step.status || "pending").replace("-", " ")}
-  </span>
+              <div className="border-t border-slate-50 pt-4 flex justify-between items-center">
+                <span className="text-[10px] font-bold text-slate-400 uppercase">
+                  {step.status?.replace("-", " ") || "pending"}
+                </span>
 
-  {(step.status || "pending") === "in-progress" && (
-    <button className="text-[#F4B400] hover:text-[#E2A600] text-xs font-bold">
-      Continue
-    </button>
-  )}
-</div>
+                {(step.status || "pending") === "in-progress" && (
+                  <button className="text-[#F4B400] hover:text-[#E2A600] text-xs font-bold">
+                    Continue
+                  </button>
+                )}
+              </div>
             </Card>
 
           </div>

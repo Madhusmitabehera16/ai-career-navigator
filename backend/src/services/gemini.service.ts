@@ -15,7 +15,11 @@ const model = generator.getGenerativeModel({
 export const generateGeminiResponse = async (
   prompt: string
 ): Promise<string> => {
-  const result = await model.generateContent(prompt);
-
-  return result.response.text();
+  try {
+    const result = await model.generateContent(prompt);
+    return result.response.text();
+  } catch (error: any) {
+    console.error("Error from GoogleGenerativeAI:", error.message || error);
+    throw new Error(`Gemini API failed: ${error.message || "Unknown error"}`);
+  }
 };

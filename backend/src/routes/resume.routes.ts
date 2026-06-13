@@ -20,7 +20,24 @@ router.get("/cloudinary-test", async (req, res) => {
 });
 
 // Protect all resume routes
-router.post("/upload", authenticate, upload.single("file"), resumeController.upload);
+const handleUpload = (req: any, res: any, next: any) => {
+  upload.single("resume")(req, res, (err: any) => {
+    if (err && err.name === 'MulterError') {
+      if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+        return res.status(400).json({ 
+          success: false, 
+          message: `Unexpected file field: '${err.field}'. Expected 'resume'.` 
+        });
+      }
+      return res.status(400).json({ success: false, message: `Multer Error: ${err.message}` });
+    } else if (err) {
+      return res.status(500).json({ success: false, message: `Upload Error: ${err.message}` });
+    }
+    next();
+  });
+};
+
+router.post("/upload", authenticate, handleUpload, resumeController.upload);
 router.get("/me", authenticate, resumeController.getMyResume);
 router.post("/parse/:resumeId", authenticate, resumeController.parseResume);
 

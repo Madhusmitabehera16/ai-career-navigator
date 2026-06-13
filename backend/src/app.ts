@@ -46,8 +46,21 @@ app.get("/db-test", async (_req, res) => {
     });
   }
 });
-app.get("/health", (_req, res) => {
-  res.json({ status: "ok" });
+app.get("/health", async (_req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({
+      status: "ok",
+      database: "connected",
+    });
+  } catch (err: any) {
+    console.error("Health check error:", err);
+    res.status(500).json({
+      status: "error",
+      database: "disconnected",
+      message: err.message || "Database connection failure",
+    });
+  }
 });
 
 // Centralized Error Handler

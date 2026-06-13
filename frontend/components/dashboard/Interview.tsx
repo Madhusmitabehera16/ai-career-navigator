@@ -10,11 +10,12 @@ import { useInterview } from "@/src/hooks/useInterview";
 export default function Interview() {
   const { data, isLoading } = useInterview();
   const questions = data?.recommendedQuestions || [];
-const readinessScore = data?.readinessScore || 0;
-const suggestions = data?.suggestions || [];
-const [activeQuestion, setActiveQuestion] = useState(
-  questions[0] || ""
-);
+  const readinessScore = data?.readinessScore || 0;
+  const suggestions = data?.suggestions || [];
+  
+  const [selectedQuestion, setSelectedQuestion] = useState<string | null>(null);
+  const activeQuestion = selectedQuestion || questions[0] || "";
+
 if (isLoading) {
   return (
     <div className="flex items-center justify-center h-64">
@@ -86,7 +87,7 @@ if (!data) {
             {questions.map((q) => (
               <button
                 key={q}
-                onClick={() => setActiveQuestion(q)}
+                onClick={() => setSelectedQuestion(q)}
                 className={`w-full text-left p-3.5 rounded-2xl border text-xs leading-normal font-semibold transition-all duration-200 cursor-pointer ${
                   activeQuestion === q
                     ? "bg-purple-50 border-purple-100 text-purple-700"

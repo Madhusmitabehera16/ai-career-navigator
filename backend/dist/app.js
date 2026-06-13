@@ -8,8 +8,15 @@ const express_1 = __importDefault(require("express"));
 const auth_routes_1 = __importDefault(require("./routes/auth.routes"));
 const resume_routes_1 = __importDefault(require("./routes/resume.routes"));
 const ai_routes_1 = __importDefault(require("./routes/ai.routes"));
+const prisma_1 = require("./config/prisma");
 const app = (0, express_1.default)();
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({
+    origin: [
+        "http://localhost:3000",
+        "https://your-vercel-app.vercel.app"
+    ],
+    credentials: true,
+}));
 app.use(express_1.default.json());
 // Routes
 app.use("/api/auth", auth_routes_1.default);
@@ -21,8 +28,38 @@ app.get("/", (_req, res) => {
         status: "ok",
     });
 });
-app.get("/health", (_req, res) => {
-    res.json({ status: "ok" });
+app.get("/db-test", async (_req, res) => {
+    try {
+        await prisma_1.prisma.$queryRaw `SELECT 1`;
+        res.json({
+            success: true,
+            message: "Database connected",
+        });
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            error: err,
+        });
+    }
+});
+app.get("/health", async (_req, res) => {
+    try {
+        await prisma_1.prisma.$queryRaw `SELECT 1`;
+        res.json({
+            status: "ok",
+            database: "connected",
+        });
+    }
+    catch (err) {
+        console.error("Health check error:", err);
+        res.status(500).json({
+            status: "error",
+            database: "disconnected",
+            message: err.message || "Database connection failure",
+        });
+    }
 });
 // Centralized Error Handler
 app.use((err, _req, res, _next) => {

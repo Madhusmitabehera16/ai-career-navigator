@@ -62,7 +62,12 @@ export interface ImprovementsData {
 export interface AnalyticsData {
   resumeScore: number;
   jobReadiness: number;
+  matchPercentage: number;
   missingSkills: string[];
+  companyName: string;
   targetRole: string;
   resumeSummary: string;
+  improvementsCount: number;
+  questionsCount: number;
+  roadmapStepsCount: number;
 }

@@ -15,6 +15,9 @@ export default function ResumeUpload() {
   const [isDragActive, setIsDragActive] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [companyName, setCompanyName] = useState("");
+  const [roleTitle, setRoleTitle] = useState("");
+  const [jobDescription, setJobDescription] = useState("");
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -61,67 +64,70 @@ export default function ResumeUpload() {
     }
   };
 
+  const triggerUpload = async () => {
+    if (!file) {
+      alert("Please select a resume.");
+      return;
+    }
 
+    if (!companyName.trim()) {
+      alert("Please enter the target company name.");
+      return;
+    }
 
-    // Upload file
-   const triggerUpload = async () => {
-  if (!file) {
-    alert("Please select a resume.");
-    return;
-  }
+    if (!roleTitle.trim()) {
+      alert("Please enter the target role title.");
+      return;
+    }
 
-  if (!currentUser) {
-    router.push("/login");
-    return;
-  }
+    if (!jobDescription.trim()) {
+      alert("Please enter the job description.");
+      return;
+    }
 
-  try {
-    setIsUploading(true);
+    if (!currentUser) {
+      router.push("/login");
+      return;
+    }
 
-    const uploadResponse = await uploadResume(file);
+    try {
+      setIsUploading(true);
 
-    const resumeId = uploadResponse.resume.id;
+      console.log("Uploading resume...");
 
-    await parseResume(resumeId);
-    const analysisResponse = await api.post(
-  `/ai/analyze/resume/${resumeId}`
-);
+      const response = await uploadResume(
+        file,
+        companyName.trim(),
+        roleTitle.trim(),
+        jobDescription.trim()
+      );
 
-const detectedRole =
-  analysisResponse.data.analysis.targetRole;
+      console.log("Upload response:", response);
 
-//    await api.post(`/ai/analyze/resume/${resumeId}`);
-//    console.log("Current User:", currentUser);
-// console.log("Target Role:", currentUser?.targetRole);
+      if (!response?.success) {
+        throw new Error("Resume processing failed");
+      }
 
-await api.post("/ai/skill-gap/create", {
-  targetRole:
-    currentUser?.targetRole || "Software Development Engineer",
-});
+      console.log("Analysis complete. Redirecting...");
 
-await api.post("/ai/roadmap/generate", {
-  targetRole:
-    currentUser?.targetRole || "Software Development Engineer",
-});
-
-await api.post("/ai/jobs/match", {
-  targetRole:
-    currentUser?.targetRole || "Software Development Engineer",
-});
-
-await api.post("/ai/interview/start", {
- targetRole:
-    currentUser?.targetRole || "Software Development Engineer",
-});
-
-    router.push("/dashboard");
-  } catch (error) {
-    console.error(error);
-    alert("Failed to process resume");
-  } finally {
-    setIsUploading(false);
-  }
-};
+      router.push("/dashboard");
+    } catch (error: any) {
+      console.error("Upload Error Details:", error);
+      
+      const backendMessage = error?.response?.data?.message;
+      const errorMessage = error?.message;
+      
+      console.error("Backend response message:", backendMessage);
+      
+      alert(
+        backendMessage ||
+        errorMessage ||
+        "Failed to process resume due to an unknown error."
+      );
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
 
   return (
@@ -211,20 +217,72 @@ await api.post("/ai/interview/start", {
                 </label>
               )}
             </div>
+        </div>
+
+        {/* Target Job Details Information Fields */}
+        <div className="w-full max-w-2xl mt-8 text-left space-y-4 bg-slate-50/40 border border-slate-100 rounded-2xl p-6">
+          <h3 className="text-xs font-bold text-slate-900 tracking-tight flex items-center gap-1.5">
+            <span className="w-1.5 h-3 bg-[#F4B400] rounded-full" />
+            Target Job Details
+          </h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider" htmlFor="companyName">
+                Company Name <span className="text-rose-500 font-extrabold">*</span>
+              </label>
+              <input
+                id="companyName"
+                type="text"
+                placeholder="e.g. Google, Microsoft, Stripe"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#F4B400] transition-all duration-200 shadow-sm"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider" htmlFor="roleTitle">
+                Role Title <span className="text-rose-500 font-extrabold">*</span>
+              </label>
+              <input
+                id="roleTitle"
+                type="text"
+                placeholder="e.g. Software Development Engineer"
+                value={roleTitle}
+                onChange={(e) => setRoleTitle(e.target.value)}
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#F4B400] transition-all duration-200 shadow-sm"
+              />
+            </div>
           </div>
 
-          {/* Action Trigger */}
-          <div className="mt-8">
-            <Button
-              onClick={triggerUpload}
-              disabled={isUploading || !file}
-              className={`bg-[#F4B400] hover:bg-[#E2A600] text-slate-900 disabled:bg-slate-100 disabled:text-slate-400 font-extrabold text-base px-10 py-6.5 rounded-2xl shadow-[0_8px_24px_rgba(244,180,0,0.25)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 ${
-                isUploading ? "animate-pulse" : ""
-              }`}
-            >
-              {isUploading ? "Processing..." : "Upload Resume"}
-            </Button>
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider" htmlFor="jobDescription">
+              Job Description <span className="text-rose-500 font-extrabold">*</span>
+            </label>
+            <textarea
+              id="jobDescription"
+              rows={5}
+              placeholder="Paste the job description details here..."
+              value={jobDescription}
+              onChange={(e) => setJobDescription(e.target.value)}
+              className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-xs font-semibold text-slate-850 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#F4B400] transition-all duration-200 shadow-sm resize-y"
+            />
           </div>
+        </div>
+
+        {/* Action Trigger */}
+        <div className="mt-8">
+          <Button
+            onClick={triggerUpload}
+            disabled={isUploading || !file || !companyName.trim() || !roleTitle.trim() || !jobDescription.trim()}
+            className={`bg-[#F4B400] hover:bg-[#E2A600] text-slate-900 disabled:bg-slate-100 disabled:text-slate-400 font-extrabold text-base px-10 py-6.5 rounded-2xl shadow-[0_8px_24px_rgba(244,180,0,0.25)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 ${
+              isUploading ? "animate-pulse" : ""
+            }`}
+          >
+            {isUploading ? "Processing..." : "Upload & Analyze"}
+          </Button>
+        </div>
         </div>
       </motion.div>
     </div>
