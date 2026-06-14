@@ -75,8 +75,8 @@ export default function Dashboard() {
 
   const renderActiveContent = () => {
     switch (activeTab) {
-      case "overview":
-        return <Overview />;
+     case "overview":
+  return <Overview setActiveTab={setActiveTab} />;
       case "resume-analysis":
         return <ResumeAnalysis />;
       case "skill-gap":
@@ -184,11 +184,16 @@ export default function Dashboard() {
         >
           <div className="px-6 py-5 border-b border-slate-50 flex justify-between items-center shrink-0">
             <div className="flex items-center gap-2">
-              <div className="bg-[#F4B400] w-8 h-8 rounded-lg flex items-center justify-center">
-                <Compass className="w-4.5 h-4.5 text-white" />
-              </div>
+              <Image
+                         src="/logo1.png" // place your transparent logo in public/logo.png
+                         alt="Logo"
+                         width={42}
+                         height={42}
+                         className="w-8 h-8 sm:w-10.5 sm:h-10.5 object-contain group-hover:scale-105 transition-transform duration-300"
+                         priority
+                       />
               <span className="text-base font-bold font-serif text-slate-900">
-                Career<span className="text-[#F4B400]">Navigator</span>
+                Jobbly
               </span>
             </div>
             <button
@@ -271,9 +276,8 @@ export default function Dashboard() {
                     </h4>
                     <div className="max-h-64 overflow-y-auto py-1">
                       {[
-                        { text: "Your resume score improved by 4%!", time: "2 hours ago" },
-                        { text: "New matching SDE job posted at Apex Ledger Corp", time: "1 day ago" },
-                        { text: "Recommended Week 2 containerization module is open", time: "3 days ago" },
+                        { text: "No notifications to display" },
+                       
                       ].map((notif, idx) => (
                         <div
                           key={idx}

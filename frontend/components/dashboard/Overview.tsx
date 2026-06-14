@@ -6,8 +6,27 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Award, Briefcase, AlertTriangle, CheckCircle, TrendingUp, Users } from "lucide-react";
 import { useAnalytics } from "@/src/hooks/useAnalytics";
+// import { useRouter } from "next/navigation";
+// import { useState } from "react";
 
-export default function Overview() {
+
+type TabId =
+  | "overview"
+  | "resume-analysis"
+  | "skill-gap"
+  | "roadmap"
+  | "projects"
+  | "interview"
+  | "improvements"
+  | "job-matching"
+  | "admin"
+  | "settings";
+
+interface OverviewProps {
+  setActiveTab: React.Dispatch<React.SetStateAction<TabId>>;
+}
+
+export default function Overview({ setActiveTab }: OverviewProps) {
   const { data, isLoading } = useAnalytics();
   const resumeScore = data?.resumeScore || 0;
   const jobReadiness = data?.jobReadiness || 0;
@@ -19,6 +38,9 @@ export default function Overview() {
   const improvementsCount = data?.improvementsCount || 0;
   const questionsCount = data?.questionsCount || 0;
   const roadmapStepsCount = data?.roadmapStepsCount || 0;
+  // const router = useRouter();
+  // const [activeTab, setActiveTab] = useState<TabId>("overview");
+  
 
   if (isLoading) {
     return (
@@ -40,6 +62,7 @@ export default function Overview() {
       </Card>
     );
   }
+  
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
@@ -192,43 +215,64 @@ export default function Overview() {
         </Card>
 
         {/* Quick Target checklist card */}
-        <Card className="bg-white border-slate-100 rounded-3xl p-6 shadow-sm space-y-4">
-          <h3 className="text-base font-bold text-slate-900 font-serif mb-1">
-            Target Milestones
-          </h3>
-          
-          <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 rounded-2xl bg-amber-50/50 border border-amber-50">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-[#F4B400]" />
-                <span className="text-xs font-bold text-slate-800">Resume Optimization</span>
-              </div>
-              <Badge className="bg-[#F4B400] text-slate-900 hover:bg-[#F4B400] border-none font-bold text-[10px]">
-                {improvementsCount} Suggestions
-              </Badge>
-            </div>
+       <Card className="bg-white border-slate-100 rounded-3xl p-6 shadow-sm space-y-4">
+  <h3 className="text-base font-bold text-slate-900 font-serif mb-1">
+    Target Milestones
+  </h3>
 
-            <div className="flex items-center justify-between p-3 rounded-2xl bg-purple-50/50 border border-purple-50">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-purple-600" />
-                <span className="text-xs font-bold text-slate-800">Mock Interview prep</span>
-              </div>
-              <Badge className="bg-purple-600 text-white hover:bg-purple-600 border-none font-bold text-[10px]">
-                {questionsCount} Questions
-              </Badge>
-            </div>
+  <div className="space-y-3">
+    {/* Resume Improvements */}
+    <div
+      onClick={() => setActiveTab("improvements")}
+      className="flex items-center justify-between p-3 rounded-2xl bg-amber-50/50 border border-amber-50 cursor-pointer hover:shadow-md hover:scale-[1.02] transition-all duration-200"
+    >
+      <div className="flex items-center gap-2">
+        <CheckCircle className="w-4 h-4 text-[#F4B400]" />
+        <span className="text-xs font-bold text-slate-800">
+          Resume Optimization
+        </span>
+      </div>
 
-            <div className="flex items-center justify-between p-3 rounded-2xl bg-blue-50/50 border border-blue-50">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-blue-600" />
-                <span className="text-xs font-bold text-slate-800">Personalized Roadmap</span>
-              </div>
-              <Badge className="bg-blue-600 text-white hover:bg-blue-600 border-none font-bold text-[10px]">
-                {roadmapStepsCount} Weeks
-              </Badge>
-            </div>
-          </div>
-        </Card>
+      <Badge className="bg-[#F4B400] text-slate-900 hover:bg-[#F4B400] border-none font-bold text-[10px]">
+        {improvementsCount} Suggestions
+      </Badge>
+    </div>
+
+    {/* Mock Interview */}
+    <div
+      onClick={() => setActiveTab("interview")}
+      className="flex items-center justify-between p-3 rounded-2xl bg-purple-50/50 border border-purple-50 cursor-pointer hover:shadow-md hover:scale-[1.02] transition-all duration-200"
+    >
+      <div className="flex items-center gap-2">
+        <CheckCircle className="w-4 h-4 text-purple-600" />
+        <span className="text-xs font-bold text-slate-800">
+          Mock Interview Prep
+        </span>
+      </div>
+
+      <Badge className="bg-purple-600 text-white hover:bg-purple-600 border-none font-bold text-[10px]">
+        {questionsCount} Questions
+      </Badge>
+    </div>
+
+    {/* Roadmap */}
+    <div
+      onClick={() => setActiveTab("roadmap")}
+      className="flex items-center justify-between p-3 rounded-2xl bg-blue-50/50 border border-blue-50 cursor-pointer hover:shadow-md hover:scale-[1.02] transition-all duration-200"
+    >
+      <div className="flex items-center gap-2">
+        <CheckCircle className="w-4 h-4 text-blue-600" />
+        <span className="text-xs font-bold text-slate-800">
+          Personalized Roadmap
+        </span>
+      </div>
+
+      <Badge className="bg-blue-600 text-white hover:bg-blue-600 border-none font-bold text-[10px]">
+        {roadmapStepsCount} Weeks
+      </Badge>
+    </div>
+  </div>
+</Card>
       </div>
 
     </div>
