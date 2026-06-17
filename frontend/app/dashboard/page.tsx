@@ -96,7 +96,7 @@ export default function Dashboard() {
       case "settings":
         return <Settings />;
       default:
-        return <Overview />;
+        return <Overview setActiveTab={setActiveTab} />;
     }
   };
 
@@ -276,7 +276,7 @@ export default function Dashboard() {
                     </h4>
                     <div className="max-h-64 overflow-y-auto py-1">
                       {[
-                        { text: "No notifications yet" },
+                        { text: "No notifications yet", time: "" },
                        
                       ].map((notif, idx) => (
                         <div
