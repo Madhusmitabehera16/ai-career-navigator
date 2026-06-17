@@ -18,6 +18,7 @@ export default function ResumeUpload() {
   const [companyName, setCompanyName] = useState("");
   const [roleTitle, setRoleTitle] = useState("");
   const [jobDescription, setJobDescription] = useState("");
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -33,6 +34,10 @@ export default function ResumeUpload() {
     e.preventDefault();
     e.stopPropagation();
     setIsDragActive(false);
+    if (!currentUser) {
+  setShowLoginModal(true);
+  return;
+}
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const droppedFile = e.dataTransfer.files[0];
@@ -54,7 +59,17 @@ export default function ResumeUpload() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    if (e.target.files && e.target.files[0]) {
+    if (!currentUser) {
+  setShowLoginModal(true);
+  return;
+}
+
+if (!currentUser) {
+  setShowLoginModal(true);
+  return;
+}
+
+if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
       if (selectedFile.size <= 2 * 1024 * 1024) {
         setFile(selectedFile);
@@ -64,7 +79,14 @@ export default function ResumeUpload() {
     }
   };
 
- const triggerUpload = async () => {
+const triggerUpload = async () => {
+  // Check auth FIRST
+  if (!currentUser) {
+    setShowLoginModal(true);
+    return;
+  }
+
+  // Validation checks
   if (!file) {
     alert("Please select a resume.");
     return;
@@ -85,15 +107,8 @@ export default function ResumeUpload() {
     return;
   }
 
-  if (!currentUser) {
-    router.push("/login");
-    return;
-  }
-
   try {
     setIsUploading(true);
-
-    console.log("Uploading resume...");
 
     const response = await uploadResume(
       file,
@@ -102,13 +117,9 @@ export default function ResumeUpload() {
       jobDescription.trim()
     );
 
-    console.log("Upload response:", response);
-
     if (!response?.success) {
       throw new Error("Resume processing failed");
     }
-
-    console.log("Analysis complete. Redirecting...");
 
     router.push("/dashboard");
   } catch (error: any) {
@@ -123,8 +134,8 @@ export default function ResumeUpload() {
     setIsUploading(false);
   }
 };
-
   return (
+    <>
     <div id="upload-section" className="max-w-4xl mx-auto px-6 py-12">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -280,5 +291,40 @@ export default function ResumeUpload() {
         </div>
       </motion.div>
     </div>
+  {showLoginModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="bg-white rounded-2xl p-6 w-[90%] max-w-md shadow-xl">
+      <h3 className="text-xl font-bold text-slate-900 mb-2">
+        Login Required
+      </h3>
+
+      <p className="text-slate-600 text-sm mb-6">
+        Please login to analyze your resume and get personalized career insights.
+      </p>
+
+      <div className="flex gap-3 justify-end">
+        <Button
+          variant="outline"
+          onClick={() => setShowLoginModal(false)}
+        >
+          Cancel
+        </Button>
+
+        <Button
+          onClick={() =>
+            router.push(
+              `/login?redirect=${encodeURIComponent("/#upload-section")}`
+            )
+          }
+          className="bg-[#82CAFF] hover:bg-[#6BBEF7]"
+        >
+          Login
+        </Button>
+      </div>
+    </div>
+  </div>
+)}
+</>
   );
+  
 };

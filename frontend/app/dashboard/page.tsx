@@ -315,7 +315,7 @@ export default function Dashboard() {
                 <Button
                   onClick={logout}
                   variant="ghost"
-                  className="text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl h-9.5 w-9.5 p-0 flex items-center justify-center cursor-pointer"
+                  className="text-red-500 hover:text-red-900 hover:bg-slate-50 rounded-xl h-9.5 w-9.5 p-0 flex items-center justify-center cursor-pointer"
                   title="Log Out"
                 >
                   <LogOut className="w-4 h-4" />
