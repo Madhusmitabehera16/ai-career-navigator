@@ -242,14 +242,14 @@ export default function Dashboard() {
               </button>
 
               {/* Search Input */}
-              <div className="relative hidden sm:block w-64 md:w-80">
+              {/* <div className="relative hidden sm:block w-64 md:w-80">
                 <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   placeholder="Search resources, topics, matching jobs..."
                   className="w-full bg-slate-50/60 border border-slate-100 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#F4B400] transition-all"
                 />
-              </div>
+              </div> */}
             </div>
 
             <div className="flex items-center gap-4 relative">
@@ -260,7 +260,7 @@ export default function Dashboard() {
               >
                 <Bell className="w-4.5 h-4.5" />
                 {/* Notification dot indicator */}
-                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-500" />
+                {/* <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-500" /> */}
               </button>
 
               {/* Notifications Dropdown Panel */}
@@ -276,7 +276,7 @@ export default function Dashboard() {
                     </h4>
                     <div className="max-h-64 overflow-y-auto py-1">
                       {[
-                        { text: "No notifications to display" },
+                        { text: "No notifications yet" },
                        
                       ].map((notif, idx) => (
                         <div
