@@ -11,7 +11,8 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://jobbly-black.vercel.app"
+      "https://jobbly-black.vercel.app",
+      "https://jobbly-frontend2.vercel.app"
     ],
     credentials: true,
   })
